@@ -47,7 +47,7 @@ def build_base():
         subprocess.call('pipenv lock --requirements > requirements.txt', shell=True)
 
         # docker build
-        subprocess.call('docker build -t eb-docker:base -f Dockerfile.base .', shell=True)
+        subprocess.call('docker build -t yapen-docker:base -f Dockerfile.base .', shell=True)
     finally:
         # 끝난 후 requirements.txt파일 삭제
         os.remove('requirements.txt')
@@ -58,7 +58,7 @@ def build_local():
         subprocess.call('pipenv lock --requirements > requirements.txt', shell=True)
 
         # docker build
-        subprocess.call('docker build -t eb-docker:local -f Dockerfile.local .', shell=True)
+        subprocess.call('docker build -t yapen-docker:local -f Dockerfile.local .', shell=True)
     finally:
         # 끝난 후 requirements.txt파일 삭제
         os.remove('requirements.txt')
@@ -70,7 +70,7 @@ def build_dev():
         subprocess.call('pipenv lock --requirements > requirements.txt', shell=True)
 
         # docker build
-        subprocess.call('docker build -t eb-docker:dev -f Dockerfile.dev .', shell=True)
+        subprocess.call('docker build -t yapen-docker:dev -f Dockerfile.dev .', shell=True)
     finally:
         # 끝난 후 requirements.txt파일 삭제
         os.remove('requirements.txt')
@@ -82,7 +82,7 @@ def build_production():
         subprocess.call('pipenv lock --requirements > requirements.txt', shell=True)
 
         # docker build
-        subprocess.call('docker build -t eb-docker:production -f Dockerfile.production .', shell=True)
+        subprocess.call('docker build -t yapen-docker:production -f Dockerfile.production .', shell=True)
     finally:
         # 끝난 후 requirements.txt파일 삭제
         os.remove('requirements.txt')

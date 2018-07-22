@@ -20,7 +20,6 @@ ROOT_DIR = os.path.dirname(BASE_DIR)
 # .secret
 SECRET_DIR = os.path.join(ROOT_DIR, '.secrets')
 secrets = json.load(open(os.path.join(SECRET_DIR, 'base.json')))
-print(secrets)
 
 
 # Quick-start development settings - unsuitable for production
@@ -30,7 +29,8 @@ print(secrets)
 
 SECRET_KEY = secrets['SECRET_KEY']
 
-
+# Auth
+AUTH_USER_MODEL = 'members.User'
 
 # Application definition
 
