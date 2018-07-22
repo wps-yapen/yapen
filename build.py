@@ -67,7 +67,7 @@ def build_local():
 def build_dev():
     try:
         # pipenv lock으로 requirements.txt생성
-        subprocess.call('pipenv lock --requirements > requirements.txt', shell=True)
+        subprocess.call('pipenv lock --requirements --dev > requirements.txt', shell=True)
 
         # docker build
         subprocess.call('docker build -t yapen-docker:dev -f Dockerfile.dev .', shell=True)
