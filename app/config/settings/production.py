@@ -7,14 +7,11 @@ ALLOWED_HOSTS = [
     'localhost',
 ]
 
+secrets = json.load(open(os.path.join(SECRET_DIR, 'production.json')))
+
 WSGI_APPLICATION = 'config.wsgi.production.application'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+DATABASES = secrets['DATABASES']
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/

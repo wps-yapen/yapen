@@ -16,9 +16,12 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 ROOT_DIR = os.path.dirname(BASE_DIR)
+SECRET_DIR = os.path.join(ROOT_DIR, '.secrets')
+STATIC_DIR = os.path.join(BASE_DIR, 'static')
+TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 
 # .secret
-SECRET_DIR = os.path.join(ROOT_DIR, '.secrets')
+
 secrets = json.load(open(os.path.join(SECRET_DIR, 'base.json')))
 
 
@@ -31,6 +34,12 @@ SECRET_KEY = secrets['SECRET_KEY']
 
 # Auth
 AUTH_USER_MODEL = 'members.User'
+
+# Static
+
+STATICFILES_DIRS = [
+    STATIC_DIR,
+]
 
 # Application definition
 
@@ -60,7 +69,9 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            TEMPLATES_DIR,
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

@@ -30,3 +30,4 @@ pyenv install
 - export DjANGO_SETTINGS_MODULE=config.settings.local
 - `./manage.py runserver`
 ```
+
