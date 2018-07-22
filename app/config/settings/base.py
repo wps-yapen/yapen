@@ -20,6 +20,7 @@ SECRET_DIR = os.path.join(ROOT_DIR, '.secrets')
 STATIC_DIR = os.path.join(BASE_DIR, 'static')
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 
+
 # .secret
 
 secrets = json.load(open(os.path.join(SECRET_DIR, 'base.json')))
