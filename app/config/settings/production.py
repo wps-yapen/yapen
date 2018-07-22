@@ -3,7 +3,8 @@ from .base import *
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-secrets = json.load(open(os.path.join(SECRET_DIR, 'produciton.json')))
+
+secrets = json.load(open(os.path.join(SECRET_DIR, 'production.json')))
 
 ALLOWED_HOSTS = [
     'localhost',
@@ -33,7 +34,7 @@ INSTALLED_APPS += [
     'storages',
 ]
 
-secrets = json.load(open(os.path.join(SECRET_DIR, 'production.json')))
+
 
 WSGI_APPLICATION = 'config.wsgi.production.application'
 
