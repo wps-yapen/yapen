@@ -1,0 +1,8 @@
+FROM        yapen-docker:base
+MAINTAINER  gambler1541@gmail.com
+
+ENV         BUILD_MODE                  local
+ENV         DJANGO_SETTINGS_MODULE      config.settings.${BUILD_MODE}
+
+
+COPY        .   /srv/project
