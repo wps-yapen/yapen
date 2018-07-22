@@ -1,12 +1,9 @@
 FROM            yapen-docker:base
 MAINTAINER      gambler1541@gmail.com
 
-ENV             BUILD_MODE              dev
+ENV             BUILD_MODE              production
 ENV             DJANGO_SETTINGS_MODULE  config.settings.${BUILD_MODE}
 
-# dev용 requirements설치
-COPY            ./requirements.txt  /srv/
-RUN             pip install -r /srv/requirements.txt
 
 COPY            .   /srv/project
 
