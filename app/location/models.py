@@ -46,3 +46,30 @@ class Reservation(models.Model):
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now=False, auto_now_add=False,blank=True)
+
+
+class Comment(models.Model):
+    pension = models.ForeignKey(
+        Pension,
+        on_delete=models.CASCADE,
+        null=True,
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+    )
+
+    content = models.CharField(max_length=300, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class PensionLike(models.Model):
+    pension = models.ForeignKey(
+        Pension,
+        on_delete=models.CASCADE
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
