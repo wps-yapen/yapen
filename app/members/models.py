@@ -9,8 +9,6 @@ class User(AbstractUser):
         ('f','여성'),
         ('x','선텍안함'),
     )
-
-    img_profile = models.ImageField(upload_to='user',  blank= True)
     site = models.URLField(blank=True)
     introduce = models.TextField(blank= True)
     gender = models.CharField(max_length=1, choices=CHOICE_GENDER,null=True)
