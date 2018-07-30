@@ -12,6 +12,8 @@ class Pension(models.Model):
     pension_image_thumbnail = models.ImageField(upload_to='pension', blank=True) # '팬션 이미지' # 해커톤때 photo
     lowest_price = models.CharField(max_length=100) # '최저가'  # 해커톤때 price
     address = models.TextField(max_length=100, blank=True) # '주소'
+    # location = models.CharField(max_length=100, blank=True)
+    # sub_location= models.CharField(max_length=100, blank=True)
     check_in = models.CharField(max_length=100,blank=True) # '입실시간'
     check_out = models.CharField(max_length=100,blank=True) # '퇴실시간'
     room_num = models.CharField(max_length=100,blank=True)# '방갯수'  # 해커톤때 room
