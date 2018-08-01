@@ -167,6 +167,12 @@ def get_int_only(string):
     return result
 
 def pension_detail_crawler(ypidx):
+    pension_picture_url_num = 1  # 저장할 pension 이미지 url 1이상으로 설정해야함.
+    room_picture_url_num = 1  # 저장할 room 이미지 url 1이상으로 설정해야함.
+    count_sec_after_popup = 3  # seleinuim으로 창 연후에 후 몇초 sleep할지
+    count_sec_after_click = 3  # seleinuim으로 각 방버튼 클릭 후 몇초 sleep할지
+    count_sec_before_end_room_for_loop = 1  # Room 모델 object에 정보 저장되는 동안 sleep---->필요한지 모르겠다. 추후 테스트후 빼자.
+
     params = {
         'ypIdx': ypidx
     }
@@ -281,6 +287,7 @@ def pension_detail_crawler(ypidx):
     image_tags = pensionImagesLists.select(" > div img")
 
     for index, image_tag in enumerate(image_tags):
+        # html보면 2개씩 같은 이미지라서 홀수번째 만 받기로함.
         if index % 2 == 0:
             image_src = image_tag.get("src")  # image_src---------------->PensionImage객체만들때써라
             # print('@@@@팬션 이미지')
@@ -289,7 +296,7 @@ def pension_detail_crawler(ypidx):
                 pension=pension,
                 pension_image=image_src,
             )
-            if index == 4:  # 3장 뽑는 시점에서 break
+            if index == (pension_picture_url_num-1)*2:  # pension_picture_url_num 장 뽑는 시점에서 break
                 break
 
     ############################################################
@@ -307,7 +314,7 @@ def pension_detail_crawler(ypidx):
     chromedriver_dir = '/home/nasanmaro/Desktop/projects/yapen/test/selenium_crawling_test/chromedriver'
     driver = webdriver.Chrome(chromedriver_dir)
     driver.get(url)
-    time.sleep(5)
+    time.sleep(count_sec_after_popup)
 
     # 방갯수만큼의 버튼을 클릭!
     image_table = driver.find_element_by_class_name('roomImageLists')
@@ -315,7 +322,7 @@ def pension_detail_crawler(ypidx):
         name = room_name_text  # 객실 이름.
         room_name_button = image_table.find_elements_by_xpath(f"//*[contains(text(), '{room_name_text}')]")
         room_name_button[0].click()
-        time.sleep(5)  # 버튼 클릭후 충분히 멈춰줘야 사진이 로딩된다.
+        time.sleep(count_sec_after_click)  # 버튼 클릭후 충분히 멈춰줘야 사진이 로딩된다.
 
         # 드라이버 인스턴스로부터 현제 메뉴 연상태의 페이지 소스 받아서 source에 넣는다.
         source = driver.page_source
@@ -394,7 +401,7 @@ def pension_detail_crawler(ypidx):
                 room_image=image_src,
             )
 
-            if index == 2:  # 3장 뽑는 시점에서 break
+            if index == (room_picture_url_num-1):  #  room_picture_url_num 장 뽑는 시점에서 break
                 break
                 # 이 for 문안에서 RoomImage객체 room마다 총세번 만들면될듯
 
@@ -413,7 +420,7 @@ def pension_detail_crawler(ypidx):
         # print(extra_charge_child)
         # print(extra_charge_baby)
 
-        time.sleep(3)
+        time.sleep(count_sec_before_end_room_for_loop)
 
     driver.close()
 
