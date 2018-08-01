@@ -247,21 +247,21 @@ def pension_detail_crawler(ypidx):
         elif key == '이용 주의사항':
             precautions = value  # precautions
 
-    print("@@@@PensionObject 속성들")
-    print(name)
-    print(address)
-    print(check_in)
-    print(check_out)
-    print(room_num)
-    print(info)
-    print(theme)
+    # print("@@@@PensionObject 속성들")
+    # print(name)
+    # print(address)
+    # print(check_in)
+    # print(check_out)
+    # print(room_num)
+    # print(info)
+    # print(theme)
+    #
+    # print(check_in_out_detail)
+    # print(pickup_detail)
+    # print(gretting)
+    # print(precautions)
 
-    print(check_in_out_detail)
-    print(pickup_detail)
-    print(gretting)
-    print(precautions)
-
-    pension = Pension.objects.create(
+    pension,pension_created_bool = Pension.objects.get_or_create(
             name=name,
             address=address,
             check_in=check_in,
@@ -283,9 +283,9 @@ def pension_detail_crawler(ypidx):
     for index, image_tag in enumerate(image_tags):
         if index % 2 == 0:
             image_src = image_tag.get("src")  # image_src---------------->PensionImage객체만들때써라
-            print('@@@@팬션 이미지')
-            print(image_src)
-            PensionImage.objects.create(
+            # print('@@@@팬션 이미지')
+            # print(image_src)
+            PensionImage.objects.get_or_create(
                 pension=pension,
                 pension_image=image_src,
             )
@@ -369,7 +369,7 @@ def pension_detail_crawler(ypidx):
         extra_charge_child = get_int_only(extra_charge_child_str)  # 아동
         extra_charge_baby = get_int_only(extra_charge_baby_str)  # 유아
 
-        room = Room.objects.create(
+        room,room_created_bool = Room.objects.get_or_create(
             pension=pension,
             name=name,
             structure=structure,
@@ -387,9 +387,9 @@ def pension_detail_crawler(ypidx):
 
         for index, image_tag in enumerate(image_tags):
             image_src = image_tag.get("src")  # image_src--------------------->RoomImage객체만들때써라
-            print('@@룸 이미지')
-            print(image_src)
-            RoomImage.objects.create(
+            # print('@@룸 이미지')
+            # print(image_src)
+            RoomImage.objects.get_or_create(
                 room=room,
                 room_image=image_src,
             )
@@ -398,30 +398,24 @@ def pension_detail_crawler(ypidx):
                 break
                 # 이 for 문안에서 RoomImage객체 room마다 총세번 만들면될듯
 
-        print("@@RoomObject 속성들")
-        print(name)
-        print(structure)
-        print(size)
-        print(normal_num_poeple)
-        print(max_num_people)
-        print(equipments)
-        print(info)
-        print(price)
-
-        print(extra_charge_head)
-        print(extra_charge_adult)
-        print(extra_charge_child)
-        print(extra_charge_baby)
+        # print("@@RoomObject 속성들")
+        # print(name)
+        # print(structure)
+        # print(size)
+        # print(normal_num_poeple)
+        # print(max_num_people)
+        # print(equipments)
+        # print(info)
+        # print(price)
+        #
+        # print(extra_charge_head)
+        # print(extra_charge_adult)
+        # print(extra_charge_child)
+        # print(extra_charge_baby)
 
         time.sleep(3)
 
     driver.close()
-
-
-
-
-
-
 
 
 
