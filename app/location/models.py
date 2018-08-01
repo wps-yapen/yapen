@@ -10,11 +10,11 @@ class Pension(models.Model):
     # 세부지역 메이페이지에서 크롤링할때 체우는 속성
     name = models.CharField(max_length=100) # '팬션이름'
     pension_image_thumbnail = models.ImageField(upload_to='pension', blank=True) # '팬션 이미지' # 해커톤때 photo # MEDIA_ROOT의세부경로가 upload_to에 들어감.
-    lowest_price = models.CharField(max_length=100) # '최저가'  # 해커톤때 price
-    pldx = models.IntegerField() # '팬션별 고유번호'
+    lowest_price = models.IntegerField(default=0, blank=True) # '최저가'  # 해커톤때 price
+    ypidx = models.IntegerField(default=0, blank=True) # '팬션별 고유번호'
     location = models.CharField(max_length=100, blank=True) #지역
     sub_location = models.CharField(max_length=100, blank=True)# 세부지역
-    discount_rate = models.IntegerField(default=0,blank=True)# 할인률@@@@@@@@@@@@@@@@@@@추가됨
+    discount_rate = models.IntegerField(default=0,blank=True)# 할인률
 
     # pension-detail 페이지에서 크롤링해서 채우는 속성
     address = models.TextField(max_length=200, blank=True) # '주소'
@@ -23,8 +23,8 @@ class Pension(models.Model):
     pickup = models.CharField(max_length=100,blank=True) # 픽업 여부
     room_num = models.IntegerField(default=0,blank=True)# '객실 수'  # 해커톤때 room
     info = models.TextField(blank=True)# '공지사항'
-    theme = models.TextField(blank=True)# '테마'
-    coordinate = models.TextField(blank=True) #좌표@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@추가됨
+    theme = models.TextField(blank=True)# '테마' ----------> 이후에 view에서 json->list로 바꿔서 잘써야함.
+    coordinate = models.TextField(blank=True) #좌표------->아직 크롤링 안했다.
 
     #pension-detail 페이지 하단부 이용안내 부분.
     check_in_out_detail = models.TextField(blank=True) # 입실/퇴실 시간 부연설명 간혹 있다.있으면 여기도 크롤링 해야함.
@@ -43,7 +43,7 @@ class Room(models.Model):
     pension = models.ForeignKey( Pension, on_delete=models.CASCADE)
 
     name = models.CharField(max_length=100) # '객실 명'
-    structure = models.CharField(max_length=100) # '객실구조'
+    structure = models.CharField(max_length=100,blank=True) # '객실구조'
     equipments = models.TextField(blank=True) # '구비시설'
     info = models.TextField(blank=True) # '객실설명'
     size = models.CharField(max_length=100,blank=True) # '크기'
@@ -60,12 +60,12 @@ class Room(models.Model):
 
 
 class PensionImage(models.Model):
-    pension_id = models.ForeignKey(Room,on_delete=models.CASCADE,)
+    pension = models.ForeignKey(Pension,on_delete=models.CASCADE,)
     pension_image = models.ImageField(upload_to='pension', blank=True) # '팬션 이미지'
 
 
 class RoomImage(models.Model):
-    room_id = models.ForeignKey(Pension,on_delete=models.CASCADE,)
+    room= models.ForeignKey(Room,on_delete=models.CASCADE,)
     room_image = models.ImageField(upload_to='room', blank=True) # '방 이미지'
 
 
