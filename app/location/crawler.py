@@ -133,9 +133,13 @@ def pension_crawler(location_no, sub_location_no):
 
 
 
+def pension_detail_crawler(pension_image_thumbnail,
+                           lowest_price,
+                           ypidx,
+                           location,
+                           sub_location,
+                           discount_rate):
 
-
-def pension_detail_crawler(ypidx):
     pension_picture_url_num = 1  # 저장할 pension 이미지 url 1이상으로 설정해야함.
     room_picture_url_num = 1  # 저장할 room 이미지 url 1이상으로 설정해야함.
     count_sec_after_popup = 5  # seleinuim으로 창 연후에 후 몇초 sleep할지
@@ -237,6 +241,15 @@ def pension_detail_crawler(ypidx):
     # print(precautions)
 
     pension,pension_created_bool = Pension.objects.get_or_create(
+    # location_total_crawler안에서 pension_detail_crawler사용시 전달받아야되는 인자들.-->location_crawler() 로 얻어짐.
+            pension_image_thumbnail=pension_image_thumbnail,
+            lowest_price=lowest_price,
+            ypidx=ypidx,
+            location=location,
+            sub_location=sub_location,
+            discount_rate=discount_rate,
+
+    #pension_detail_crawler 안에서 크롤링한 속성들.
             name=name,
             address=address,
             check_in=check_in,
@@ -397,7 +410,9 @@ def pension_detail_crawler(ypidx):
 
 ###########################################################################################
 ##location_name_list 로부터 지역명,고유번호 받아서 각 세부지역별로 pension_crawler
-## 해서 기본정보 5개씩 모으는 크롤러##
+## 해서 기본정보 5개씩 모으는 크롤러##(
+# 세부 지역별 메인페이지만 crawling해서 정보 5개만 가지고 사진 여러장 있는 페이지만 띄우고 싶다면 (디테일 크롤링하지 않더라도) 이것만 돌리됨.
+
 
 def location_crawler():
     location_info_list = list()
@@ -418,8 +433,8 @@ def location_crawler():
 
             # 기존에 pension모델 1차적으로 이름,가격,이미지로  만들던것에
             # location, sub_location 속성 추가해서 이곳에서 만들면 될듯하다.
-            # 일단은 리스트 형태로 정보 6개 묶어서 저장해보겠음.
-            # [[location,sub_location,title,pricem,img_file,ypidx]....팬션 999까지 한 리스트에
+            # 일단은 리스트 형태로 정보 7개 묶어서 저장해보겠음.
+            # [[location,sub_location,title,pricem,img_file,ypidx,discount_rate]....팬션 999까지 한 리스트에
 
             for i in range(len(sub_locations_info_list[0])):
                 location_info_list.append([location_name,
@@ -450,9 +465,10 @@ def location_crawler_total():
         ypidx = pension_info[5]
         discount_rate = pension_info[6]
 
-    # PensionObjects위 속성 의 값들 5개씩만 가지고 1차적으로 만듬 ----------------->추후에 먼저 세부 메인페이지띄우고 클릭하면서 pension_detail크롤링하고 싶을경우 대비해서 나눠놈.
-        pension,pension_created_bool = Pension.objects.get_or_create(
-            name=name,
+        # pension_detail_crawler에 location_crawler 에서 탐색한 기본 7정보 넣어주면
+        # pension_detail 페이지에서 추가속성들 10개더 찾아서 Pension 객체 만듬.
+        # pension_detail_crawler 안에서 해당 Pension에 소속된 Room 들의 정보 크롤링하고 Room 객체들까지 만듬.
+        pension_detail_crawler(
             pension_image_thumbnail=pension_image_thumbnail,
             lowest_price=lowest_price,
             ypidx=ypidx,
@@ -460,5 +476,3 @@ def location_crawler_total():
             sub_location=sub_location,
             discount_rate=discount_rate,
         )
-        # location_info_list 에있던 ypidx값 가지고 pension_detail_crawler돌려서 나머지 속성들 체움,
-        pension_detail_crawler(ypidx)
