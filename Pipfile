@@ -10,10 +10,13 @@ django = "*"
 django-storages = "*"
 pillow = "*"
 uwsgi = "*"
+djangorestframework = "*"
+utils = "*"
 
 [dev-packages]
 awsebcli = "*"
 ipython = "*"
+django-extensions = "*"
 
 [requires]
 python_version = "3.6"
