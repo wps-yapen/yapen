@@ -3,7 +3,6 @@ import requests
 from bs4 import BeautifulSoup
 import time
 from urllib import parse
-import json
 from selenium import webdriver
 
 from location.models import Pension, RoomImage, PensionImage, Room
@@ -16,6 +15,17 @@ def get_int_only(string):
     else:
         result = int(re.sub(',','',a[0]))
     return result
+
+
+def coordinates(address):
+    URL = 'http://maps.googleapis.com/maps/api/geocode/json?sensor=false&language=ko&address={}' \
+        .format(address)
+    response = requests.get(URL)
+    data = response.json()
+    lat = data['results'][0]['geometry']['location']['lat']
+    lng = data['results'][0]['geometry']['location']['lng']
+
+    return (lat,lng)
 
 # location_name_list 뽑는 과정
 def location_name_list_crawler():
@@ -166,6 +176,8 @@ def pension_detail_crawler(pension_image_thumbnail,
     trs = table[0].select('tr')
     tds = trs[0].select('td')
     address = tds[0].get_text()  # address
+    result = re.findall('지번 : (.*) ',address)
+    lat,lng = coordinates(result)
 
     # check_in, check_out
     tds2 = trs[1].select('td')
@@ -196,7 +208,8 @@ def pension_detail_crawler(pension_image_thumbnail,
     theme_list = []
     for li in lis:
         theme_list.append(li.get_text())
-    theme = json.dumps(theme_list)  # theme
+        # '테마1,테마2,테마3' 이런 형태로 저장하고 싶다.
+    theme = (',').join(theme_list)  # theme
 
     ###############pension_detail 페이지 하단 추가정보들 .
     detailDiv = soup.select('div.detailDiv')[0]
@@ -257,6 +270,8 @@ def pension_detail_crawler(pension_image_thumbnail,
             room_num=room_num,
             info=info,
             theme=theme,
+            lat=lat,
+            lng=lng,
             check_in_out_detail=check_in_out_detail,
             pickup_detail=pickup_detail,
             gretting=gretting,
