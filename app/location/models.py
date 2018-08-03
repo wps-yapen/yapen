@@ -27,7 +27,8 @@ class Pension(models.Model):
     room_num = models.IntegerField(default=0, blank=True)# '객실 수'  # 해커톤때 room
     info = models.TextField(blank=True)# '공지사항'
     theme = models.TextField(blank=True)# '테마' ----------> 이후에 view에서 json->list로 바꿔서 잘써야함.
-    coordinate = models.TextField(blank=True) #좌표------->아직 크롤링 안했다.
+    lat = models. FloatField(default=0, blank=True) #좌표
+    lng = models.FloatField(default=0, blank=True)
 
     #pension-detail 페이지 하단부 이용안내 부분.
     check_in_out_detail = models.TextField(blank=True) # 입실/퇴실 시간 부연설명 간혹 있다.있으면 여기도 크롤링 해야함.
