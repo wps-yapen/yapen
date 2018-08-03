@@ -13,6 +13,8 @@ uwsgi = "*"
 "beautifulsoup4" = "*"
 lxml = "*"
 selenium = "*"
+djangorestframework = "*"
+utils = "*"
 
 [dev-packages]
 awsebcli = "*"
