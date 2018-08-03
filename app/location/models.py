@@ -24,7 +24,7 @@ class Pension(models.Model):
     check_in = models.CharField(max_length=100,blank=True) # '입실시간'
     check_out = models.CharField(max_length=100,blank=True) # '퇴실시간'
     pickup = models.CharField(max_length=100,blank=True) # 픽업 여부
-    room_num = models.IntegerField(default=0,blank=True)# '객실 수'  # 해커톤때 room
+    room_num = models.IntegerField(default=0, blank=True)# '객실 수'  # 해커톤때 room
     info = models.TextField(blank=True)# '공지사항'
     theme = models.TextField(blank=True)# '테마' ----------> 이후에 view에서 json->list로 바꿔서 잘써야함.
     coordinate = models.TextField(blank=True) #좌표------->아직 크롤링 안했다.
