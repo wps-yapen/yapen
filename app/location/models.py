@@ -1,3 +1,6 @@
+import json
+
+import requests
 from django.conf import settings
 from django.db import models
 
@@ -34,7 +37,8 @@ class Pension(models.Model):
 
 
 
-# 팬션, 방 이미지 어떻게 관리하는지?
+
+    # 팬션, 방 이미지 어떻게 관리하는지?
 # pension ->  pension_image_thumbnail이미지 한장 mainpage 크롤링할때 가져오기.
 #         ->  PensionImage 모델괴 Foreignkey로 연결되서 여러장의 pension이미지를 table로 가짐.
 # room    ->  RoomImage 모델괴 Foreignkey로 연결되서 여러장의 room이미지를 table로 가짐.

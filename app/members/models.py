@@ -1,17 +1,32 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from rest_framework.authtoken.models import Token
+
+__all__ = (
+    'User',
+)
 
 
 class User(AbstractUser):
-    img_profile = models.ImageField(upload_to='user',blank=True)
-    CHOICE_GENDER=(
-        ('m','남성'),
-        ('f','여성'),
-        ('x','선텍안함'),
-    )
-    site = models.URLField(blank=True)
-    introduce = models.TextField(blank= True)
-    gender = models.CharField(max_length=1, choices=CHOICE_GENDER,null=True)
+    username = models.CharField(max_length=100,unique=True)
+    password = models.CharField(max_length=15)
+    password2 = models.CharField(max_length=15)
+    email = models.EmailField()
+    phone_number = models.CharField(max_length=15)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_by = models.DateTimeField(auto_now=True)
+    active = models.BooleanField(default=False)
+
+    # @receiver(post_save, sender=settings.AUTH_USER_MODEL)
+    # def create_auth_token(sender, instance=None, created=False, **kwargs):
+    #     if created:
+    #         Token.objects.create(user=instance)
+    #
+
+    class Meta:
+        db_table = "users"
 
     def __str__(self):
         return self.username
