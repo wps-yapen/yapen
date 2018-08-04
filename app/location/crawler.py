@@ -16,17 +16,6 @@ def get_int_only(string):
         result = int(re.sub(',','',a[0]))
     return result
 
-
-def coordinates(address):
-    URL = 'http://maps.googleapis.com/maps/api/geocode/json?sensor=false&language=ko&address={}' \
-        .format(address)
-    response = requests.get(URL)
-    data = response.json()
-    lat = data['results'][0]['geometry']['location']['lat']
-    lng = data['results'][0]['geometry']['location']['lng']
-
-    return (lat,lng)
-
 # location_name_list 뽑는 과정
 def location_name_list_crawler():
     request = requests.get("http://www.yapen.co.kr")
@@ -177,7 +166,16 @@ def pension_detail_crawler(pension_image_thumbnail,
     tds = trs[0].select('td')
     address = tds[0].get_text()  # address
     result = re.findall('지번 : (.*) ',address)
-    lat,lng = coordinates(result)
+    lat=0
+    lng=0
+    while(lat==0):     # 한번 요청 보내도 값 안줄때가 있어서 적절한 값 들어갈때까지 요청 보낸다.
+        URL = 'http://maps.googleapis.com/maps/api/geocode/json?sensor=false&language=ko&address={}' \
+            .format(result)
+        response = requests.get(URL)
+        data = response.json()
+        if data.get('results'):  # 만약 reaults에 뭔가 있다면 if문들어가서 lat, lng에 값 할당
+            lat = data['results'][0]['geometry']['location']['lat']                                 # 위도 lat
+            lng = data['results'][0]['geometry']['location']['lng']                                 # 경도 lng
 
     # check_in, check_out
     tds2 = trs[1].select('td')
@@ -267,6 +265,7 @@ def pension_detail_crawler(pension_image_thumbnail,
             address=address,
             check_in=check_in,
             check_out=check_out,
+            pickup=pickup,
             room_num=room_num,
             info=info,
             theme=theme,
