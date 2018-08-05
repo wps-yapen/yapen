@@ -22,7 +22,8 @@ from .views import index
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', index),
-    path('members/', include('members.urls'))
+    path('members/', include('members.urls')),
+    path('location/', include('location.urls'))
 ]
 urlpatterns += static(
     prefix=settings.MEDIA_URL,
