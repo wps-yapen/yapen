@@ -16,7 +16,7 @@ def get_int_only(string):
         result = int(re.sub(',','',a[0]))
     return result
 
-def room_crawler(soup,url,pension,count_sec_after_popup,count_sec_after_click,room_picture_url_num,count_sec_before_end_room_for_loop):
+def room_crawler(soup,room_num,url,pension,count_sec_after_popup,count_sec_after_click,room_picture_url_num):
 
     ############################################################
     # Room 모델 정보, RoomImage 모델 체우기 위한 이미지 셀레늄으로 뽑아보겠슴.
@@ -150,8 +150,6 @@ def room_crawler(soup,url,pension,count_sec_after_popup,count_sec_after_click,ro
         # print(extra_charge_adult)
         # print(extra_charge_child)
         # print(extra_charge_baby)
-
-        time.sleep(count_sec_before_end_room_for_loop)
 
     driver.close()
 
@@ -376,6 +374,7 @@ def pension_detail_crawler(pension_image_thumbnail,
             if index == (pension_picture_url_num-1)*2:  # pension_picture_url_num 장 뽑는 시점에서 break
                 break
     room_crawler(soup=soup,
+                 room_num=room_num,
                  url=url,
                  pension=pension,
                  count_sec_after_click=count_sec_after_click,
