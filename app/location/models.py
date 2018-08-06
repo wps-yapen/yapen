@@ -28,6 +28,7 @@ class Pension(models.Model):
     ypidx = models.IntegerField(default=0, blank=True) # '팬션별 고유번호'
     location = models.CharField(max_length=100, blank=True) #지역
     sub_location = models.CharField(max_length=100, blank=True)# 세부지역
+    sub_location_no = models.CharField(max_length=100, blank=True)# 세부지역 번호
     discount_rate = models.IntegerField(default=0,blank=True)# 할인률
 
     # pension-detail 페이지에서 크롤링해서 채우는 속성

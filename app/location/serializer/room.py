@@ -3,7 +3,9 @@ from ..models import Pension, Room, RoomImage, PensionImage
 
 __all__ = (
 
+    'RoomBaseSerializer',
     'RoomSerializer',
+    'RoomReservationSerializer',
     'RoomImageSerializer',
 )
 
@@ -17,24 +19,37 @@ class RoomImageSerializer(serializers.ModelSerializer):
         )
 
 
-class RoomSerializer(serializers.ModelSerializer):
-    roomimages = RoomImageSerializer(many=True, read_only=True)
+class RoomBaseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Room
         fields = (
         # 'pension',
         'name' ,
-        'structure' ,
-        'equipments' ,
-        'info',
         'size',
         'normal_num_poeple',
         'max_num_people' ,
         'price' ,
-        # 'extra_charge_head' ,
-        # 'extra_charge_adult' ,
-        # 'extra_charge_child' ,
-        # 'extra_charge_baby' ,
+        )
+
+class RoomSerializer(RoomBaseSerializer):
+    roomimages = RoomImageSerializer(many=True, read_only=True)
+
+    class Meta(RoomBaseSerializer.Meta):
+        fields = RoomBaseSerializer.Meta.fields + (
+        'structure' ,
+        'equipments' ,
+        'info',
         'roomimages',
+        )
+
+
+class RoomReservationSerializer(RoomBaseSerializer):
+
+    class Meta(RoomBaseSerializer.Meta):
+        fields = RoomBaseSerializer.Meta.fields + (
+        'extra_charge_head' ,
+        'extra_charge_adult' ,
+        'extra_charge_child' ,
+        'extra_charge_baby',
         )

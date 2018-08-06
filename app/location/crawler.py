@@ -54,7 +54,6 @@ def room_crawler(soup,room_num,url,pension,count_sec_after_popup,count_sec_after
         image_tags = jssort.select('div.p > img')
 
         # 빈값들을 일단 넣어줘서 아래서 Room 모델 생성시 애러뜨지 않게하려함.
-        name = ""
         structure = ""
         size = ""
         normal_num_poeple = 0
@@ -213,6 +212,7 @@ def pension_detail_crawler(pension_image_thumbnail,
                            ypidx,
                            location,
                            sub_location,
+                           sub_location_no,
                            discount_rate):
     max_room_num = 4
     pension_picture_url_num = 2  # 저장할 pension 이미지 url 1이상으로 설정해야함.
@@ -337,6 +337,7 @@ def pension_detail_crawler(pension_image_thumbnail,
             ypidx=ypidx,
             location=location,
             sub_location=sub_location,
+            sub_location_no=sub_location_no,
             discount_rate=discount_rate,
 
     #pension_detail_crawler 안에서 크롤링한 속성들.
@@ -479,6 +480,7 @@ def location_crawler():
             for i in range(len(sub_locations_info_list[0])):
                 location_info_list.append([location_name,
                                            sub_location_name,
+                                           sub_location_no,
                                            sub_locations_info_list[0][i],  # name
                                            sub_locations_info_list[1][i],  # lowest_price
                                            sub_locations_info_list[2][i],  # pension_image_thumbnail
@@ -499,11 +501,12 @@ def location_crawler_total():
     for pension_info in location_info_list:
         location = pension_info[0]
         sub_location = pension_info[1]
-        name = pension_info[2]
-        lowest_price = pension_info[3]
-        pension_image_thumbnail = pension_info[4]
-        ypidx = pension_info[5]
-        discount_rate = pension_info[6]
+        sub_location_no = pension_info[2]
+        name = pension_info[3]
+        lowest_price = pension_info[4]
+        pension_image_thumbnail = pension_info[5]
+        ypidx = pension_info[6]
+        discount_rate = pension_info[7]
 
         # pension_detail_crawler에 location_crawler 에서 탐색한 기본 7정보 넣어주면
         # pension_detail 페이지에서 추가속성들 10개더 찾아서 Pension 객체 만듬.
@@ -514,5 +517,6 @@ def location_crawler_total():
             ypidx=ypidx,
             location=location,
             sub_location=sub_location,
+            sub_location_no=sub_location_no,
             discount_rate=discount_rate,
         )
