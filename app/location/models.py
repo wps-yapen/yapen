@@ -73,7 +73,6 @@ class RoomImage(models.Model):
     room= models.ForeignKey(Room,on_delete=models.CASCADE,)
     room_image = models.ImageField(upload_to='room', blank=True) # '방 이미지'
 
-
 # 반대쪽 입장에서 이것이 뭔지 생각해서 related_name 정한다.
 class Reservation(models.Model):
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
@@ -91,8 +90,6 @@ class Reservation(models.Model):
     # 결제방법 - > 무통장 입금 관련 정보
     deposit_bank = models.CharField( max_length=100,blank=True) # 입금은행
     depositor_name = models.CharField( max_length=100,blank=True) # 입금자명
-
-
 
 class Comment(models.Model):
     pension = models.ForeignKey(
