@@ -5,29 +5,30 @@ from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
 from rest_framework import status, permissions
 from rest_framework.authtoken.models import Token
-from rest_framework.authtoken.serializers import AuthTokenSerializer
+from rest_framework.compat import authenticate
+from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
 
 from rest_framework.views import APIView
 
-from members.serializer import UserCreateSerializer
+from members.serializer import UserCreateSerializer, UserDetailSerializer, UserPasswordChange
 from members.token import account_activation_token
 
 User = get_user_model()
 
+
 class SignUp(APIView):
     def post(self, request):
         serializer = UserCreateSerializer(data=request.data)
+        print(serializer)
         if serializer.is_valid():
+            print(serializer.validated_data)
             serializer.save()
             return Response(serializer.validated_data, status=status.HTTP_200_OK)
 
 
-
-
 class UserActivate(APIView):
     permission_classes = (permissions.AllowAny,)
-
     def get(self, request, uidb64, token):
         try:
             uid = force_text(urlsafe_base64_decode(uidb64.encode('utf-8')))
@@ -47,24 +48,49 @@ class UserActivate(APIView):
         except Exception as e:
             print(traceback.format.exc())
 
-
-class LoginApiView(APIView):
-
+class AuthToken(APIView):
     def post(self, request):
-        print(type(request.data))
-        serializer = AuthTokenSerializer(data = request.data)
-        print(type(serializer))
-        if serializer.is_valid(raise_exception=True):
-            user = serializer.validated_data['user']
-            token, _ = Token.objects.get_or_create(user=user)
+        username = request.data.get('username')
+        password = request.data.get('password')
+        user = authenticate(username=username, password=password)
+
+        if user:
+            token, _= Token.objects.get_or_create(user=user)
 
             data = {
                 'token' : token.key,
-                'user' : UserCreateSerializer(user.data),
-            }
 
+            }
             return Response(data, status=status.HTTP_200_OK)
+        else:
+            return AuthenticationFailed()
+
+
+class UserDetailView(APIView):
+    permission_classes = (
+        permissions.IsAuthenticated,
+    )
+    def get(self, request):
+        serializer = UserDetailSerializer(request.user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class UserChangePassword(APIView):
+    permission_classes = (
+    permissions.IsAuthenticated,
+    )
+
+    def patch(self, request, *args, **kwargs):
+        user = User.objects.get(username=request.user)
+        serializer = UserPasswordChange(user, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+
+
+
 
