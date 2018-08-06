@@ -73,13 +73,6 @@ class RoomImage(models.Model):
     room_image = models.ImageField(upload_to='room', blank=True) # '방 이미지'
 
 
-# 반대쪽 입장에서 이것이 뭔지 생각해서 related_name 정한다.
-class Reservation(models.Model):
-    room = models.ForeignKey(Room, on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    date = models.DateTimeField(auto_now=False, auto_now_add=False,blank=True)
-
-
 class Comment(models.Model):
     pension = models.ForeignKey(
         Pension,
