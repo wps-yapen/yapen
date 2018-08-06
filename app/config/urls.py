@@ -16,24 +16,15 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-
 from django.urls import path, include
-from rest_framework.authtoken.views import obtain_auth_token
 
-from members.views import AuthToken
 from .views import index
-from members.views import UserChangePassword
-
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', index),
     path('members/', include('members.urls')),
 
-
-
-    path('login/', AuthToken.as_view(), name='login'),
-    path('changepassword/', UserChangePassword.as_view(), name = 'changepassword'),
 
 
 ]
