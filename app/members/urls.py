@@ -1,10 +1,14 @@
 from django.urls import path
 
-from .views import SignUp, UserActivate, LoginApiView
+from .views import SignUp, UserActivate, UserDetailView, AuthToken, UserChangePassword
 
 app_name = 'members'
+
 urlpatterns = [
-    path('signup/', SignUp.as_view(), name='signup'),
-    path('login/', LoginApiView.as_view(), name='login'),
     path('activate/<str:uidb64>/<str:token>', UserActivate.as_view(), name='activate'),
+    path('signup/', SignUp.as_view(), name='signup'),
+    path('login/', AuthToken.as_view(), name='login'),
+    path('detail/', UserDetailView.as_view(), name='detail'),
+    path('changepassword/', UserChangePassword.as_view(), name='changepassword'),
+
 ]
