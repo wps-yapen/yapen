@@ -31,6 +31,9 @@ class PensionBaseSerializer(serializers.ModelSerializer):
             'pension_image_thumbnail',
             'lowest_price',
             'discount_rate',
+            'location',
+            'sub_location',
+            'sub_location_no'
         )
 
 
@@ -44,8 +47,6 @@ class PensionDetailSerializer(PensionBaseSerializer):
 
     class Meta(PensionBaseSerializer.Meta):
         fields = PensionBaseSerializer.Meta.fields + (
-            'location',
-            'sub_location',
             'address',
             'check_in',
             'check_out',
