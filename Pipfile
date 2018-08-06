@@ -10,10 +10,16 @@ django = "*"
 django-storages = "*"
 pillow = "*"
 uwsgi = "*"
+"beautifulsoup4" = "*"
+lxml = "*"
+selenium = "*"
+djangorestframework = "*"
+utils = "*"
 
 [dev-packages]
 awsebcli = "*"
 ipython = "*"
+django-extensions = "*"
 
 [requires]
 python_version = "3.6"
