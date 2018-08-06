@@ -16,64 +16,144 @@ def get_int_only(string):
         result = int(re.sub(',','',a[0]))
     return result
 
-# location_name_list 뽑는 과정
-def location_name_list_crawler():
-    request = requests.get("http://www.yapen.co.kr")
-    response = request.text
-    soup = BeautifulSoup(response, 'lxml')
+def room_crawler(soup,url,pension,count_sec_after_popup,count_sec_after_click,room_picture_url_num,count_sec_before_end_room_for_loop):
 
-    left_menu = soup.select('div.locLayer')
-    # 풀빌라, MD추천 제외 14지역중 7지역 만남김.
-    selected_left_menu = left_menu[2:3]
+    ############################################################
+    # Room 모델 정보, RoomImage 모델 체우기 위한 이미지 셀레늄으로 뽑아보겠슴.
 
-    # 여기에 list 형태로 지역,지역고유번호/(세부지역,고유번호) 넣고싶다.
-    # location_name_list =[ [지역1 ,지역1고유번호 , [ (고유번호,세부지역),(고유번호2,세부지역2)...] ],
-    #                       [지역2 ,지역2고유번호 , [ (고유번호,세부지역),(고유번호2,세부지역2)...] ],..
-    location_name_list = list()
+    # 버튼 이름 으로쓸 방 이름부터 뽑아내겠슴.
+    room_name_list = []
+    image_table = soup.select('div.roomImageLists')
+    image_table_lis = image_table[0].select('li')
+    for index, image_table_li in enumerate(image_table_lis):
+        if 0 < index < room_num + 1:
+            room_name_list.append(image_table_li.get_text())
 
-    for location in selected_left_menu:
-        # 지역 이름 먼저 뽑음
-        location_name = location.select('div.titleStyle')[0].get_text(strip=True)
-        location_name_sub_list = list()
-        location_name_sub_list.append(location_name)
+    # 접속.
+    chromedriver_dir = '/home/nasanmaro/Desktop/projects/yapen/test/selenium_crawling_test/chromedriver'
+    driver = webdriver.Chrome(chromedriver_dir)
+    driver.get(url)
+    time.sleep(count_sec_after_popup)
 
-        li = location.select('li')
+    # 방갯수만큼의 버튼을 클릭!
+    image_table = driver.find_element_by_class_name('roomImageLists')
+    for room_name_text in room_name_list:
+        name = room_name_text  # 객실 이름.
+        room_name_button = image_table.find_elements_by_xpath('//li[contains(text(), "{0}") and @class="roomLists"]'.format(room_name_text))
+        room_name_button[0].click()
+        time.sleep(count_sec_after_click)  # 버튼 클릭후 충분히 멈춰줘야 사진이 로딩된다.
 
-        # for문 돌면서 (고유번호 세부지역) 리스트에 담은뒤 location_list에 넣겠다.
-        location_detail_list = []
-        for location_detail in li:
-            onclick_value = location_detail['onclick']  # regionMove('1.003021','금산/논산');
+        # 드라이버 인스턴스로부터 현제 메뉴 연상태의 페이지 소스 받아서 source에 넣는다.
+        source = driver.page_source
+        # soup 객체로 만듬.
+        soup = BeautifulSoup(source, 'lxml')
 
-            split_right = onclick_value.split(',')[0]
-            split_left = onclick_value.split(',')[1]
+        pensionImagesLists = soup.find(id="pensionImagesLists")
+        jssorts = pensionImagesLists.select_one('div.jssort07')
+        jssort = jssorts.select('div')[0]
+        image_tags = jssort.select('div.p > img')
 
-            sub_location_no = re.findall("'(.+)'", split_right)[0]
-            sub_location_name = re.findall("'(.+)'", split_left)[0]
+        # 빈값들을 일단 넣어줘서 아래서 Room 모델 생성시 애러뜨지 않게하려함.
+        name = ""
+        structure = ""
+        size = ""
+        normal_num_poeple = 0
+        max_num_people = 0
+        equipments = ""
+        info = ""
+        price = 0
+        extra_charge_head = 0
+        extra_charge_adult = 0
+        extra_charge_child = 0
+        # room 의 속성들 뽑는중.
+        layer_table_trs = soup.select('div.layerBox > table > tbody > tr')
 
-            flag_for_stop_upper_for = False
-            if len(re.findall('.*(전체).*', sub_location_name))==1: # sub_location_name 에 전체가 들어있으면 for문 이하 건너뜀
-                continue
+        # 종종 여기서 애러떠서 아예 빈값이면 안들어가게했음.
+        if layer_table_trs:
+            td_list1 = layer_table_trs[0].select('td')  # 1행
+            structure = td_list1[1].get_text()  # '객실구조'
+            size = td_list1[3].get_text(strip=True)  # '크기'
+            num_result = re.findall('(\d*)명 / (\d*)명', td_list1[5].get_text())
+            normal_num_poeple = int(num_result[0][0])  # '기준인원'
+            max_num_people = int(num_result[0][1])  # '최대인원'
 
-            location_detail_tuple = (sub_location_no, sub_location_name)
+            td_list2 = layer_table_trs[1].select('td')  # 2행
+            equipments = td_list2[1].get_text()  # 구비시설
 
-            # (고유번호/세부지역) 리스트에 담음
-            location_detail_list.append(location_detail_tuple)
+            td_list3 = layer_table_trs[2].select('td')  # 3행
+            info = td_list3[1].get_text()  # 객실 설명
 
+            td_list4 = layer_table_trs[3].select(' > td')  # 4행
 
-        # 지역 고유번호부터 정규표현식으로 뽑아내서 담음.(세부지역 고유번호의 소숫점 뒤 3자리)
+            ######기본금액뽑기.
+            # price table 의 content중 좌상단 한개만 선택해서 기본금액으로 이것만 저장하려함.
+            price_table_td = td_list4[1].select('table.datePriceTbl > tbody > tr > td')
 
-        location_detail_no_for_search = location_detail_list[0][0]  # '1.003021'
-        location_detaol_no = re.findall(".(\d\d\d)", location_detail_no_for_search)[0]
-        location_name_sub_list.append(location_detaol_no)
+            # 추가할인으로 밑줄 그어진 부분 같은 경우는 이것이 p테그안에 들어가서 따로 구분해줌.
+            price_p_tag = price_table_td[1].select_one('p')
+            if price_p_tag == None:
+                price_p_tag = price_table_td[1]
+            # 100,000원 에서 숫자들만뽑아냄.
+            price = get_int_only(price_p_tag.get_text(strip=True))  # 가격
 
-        # location_name_sub_list (고유번호 세부지역) 리스트를 넣음.
-        location_name_sub_list.append(location_detail_list)
+            ###### 추가금액 뽑기
+            extra_charge_table_trs = td_list4[3].select('table.datePriceTbl > thead > tr')
+            extra_charge_head = extra_charge_table_trs[0].get_text(strip=True)  # 추가금액 헤드
+            extra_charge_adult_str = extra_charge_table_trs[1].select('td')[1].get_text(strip=True)
+            extra_charge_child_str = extra_charge_table_trs[2].select('td')[1].get_text(strip=True)
+            extra_charge_baby_str = extra_charge_table_trs[3].select('td')[1].get_text(strip=True)
+            # 100,000원 에서 숫자들만뽑아냄.
+            extra_charge_adult = get_int_only(extra_charge_adult_str)  # 어른
+            extra_charge_child = get_int_only(extra_charge_child_str)  # 아동
+            extra_charge_baby = get_int_only(extra_charge_baby_str)  # 유아
 
-        # 상위 리스트에 넣음
-        location_name_list.append(location_name_sub_list)
+        room,room_created_bool = Room.objects.get_or_create(
+            pension=pension,
+            name=name,
+            structure=structure,
+            size=size,
+            normal_num_poeple=normal_num_poeple,
+            max_num_people=max_num_people,
+            equipments=equipments,
+            info=info,
+            price=price,
+            extra_charge_head=extra_charge_head,
+            extra_charge_adult=extra_charge_adult,
+            extra_charge_child=extra_charge_child,
+            extra_charge_baby=extra_charge_baby,
+        )
 
-    return location_name_list
+        for index, image_tag in enumerate(image_tags):
+            image_src = image_tag.get("src")  # image_src--------------------->RoomImage객체만들때써라
+            # print('@@룸 이미지')
+            # print(image_src)
+            RoomImage.objects.get_or_create(
+                room=room,
+                room_image=image_src,
+            )
 
+            if index == (room_picture_url_num-1):  #  room_picture_url_num 장 뽑는 시점에서 break
+                break
+                # 이 for 문안에서 RoomImage객체 room마다 총세번 만들면될듯
+
+        # print("@@RoomObject 속성들")
+        # print(name)
+        # print(structure)
+        # print(size)
+        # print(normal_num_poeple)
+        # print(max_num_people)
+        # print(equipments)
+        # print(info)
+        # print(price)
+        #
+        # print(extra_charge_head)
+        # print(extra_charge_adult)
+        # print(extra_charge_child)
+        # print(extra_charge_baby)
+
+        time.sleep(count_sec_before_end_room_for_loop)
+
+    driver.close()
 
 # 이제 각 페이지 location 가서 해커톤때 쓴 pension crawler 돌리고 싶다.
 # 메인페이지에서 기본정보 3개만 여러개 팬션에게서 가져왔던것.
@@ -130,20 +210,17 @@ def pension_crawler(location_no, sub_location_no):
 
 
 
-
-
 def pension_detail_crawler(pension_image_thumbnail,
                            lowest_price,
                            ypidx,
                            location,
                            sub_location,
                            discount_rate):
-
-    pension_picture_url_num = 1  # 저장할 pension 이미지 url 1이상으로 설정해야함.
-    room_picture_url_num = 1  # 저장할 room 이미지 url 1이상으로 설정해야함.
-    count_sec_after_popup = 5  # seleinuim으로 창 연후에 후 몇초 sleep할지
-    count_sec_after_click = 5  # seleinuim으로 각 방버튼 클릭 후 몇초 sleep할지
-    count_sec_before_end_room_for_loop = 1  # Room 모델 object에 정보 저장되는 동안 sleep---->필요한지 모르겠다. 추후 테스트후 빼자.
+    max_room_num = 4
+    pension_picture_url_num = 2  # 저장할 pension 이미지 url 1이상으로 설정해야함.
+    room_picture_url_num = 2  # 저장할 room 이미지 url 1이상으로 설정해야함.
+    count_sec_after_popup = 3  # seleinuim으로 창 연후에 후 몇초 sleep할지
+    count_sec_after_click = 2  # seleinuim으로 각 방버튼 클릭 후 몇초 sleep할지
 
     params = {
         'ypIdx': ypidx
@@ -192,6 +269,10 @@ def pension_detail_crawler(pension_image_thumbnail,
     number_tags = td4[0].select('span')
     room_string = number_tags[0].get_text()
     room_num = int(re.search('(\d*)', room_string).group())  # room_num
+
+    # room_num 최대 max_room_num으로 제한걸어줌.
+    if room_num > max_room_num:
+        room_num = max_room_num
 
     # info
     td5 = trs[4].select('td')
@@ -294,131 +375,77 @@ def pension_detail_crawler(pension_image_thumbnail,
             )
             if index == (pension_picture_url_num-1)*2:  # pension_picture_url_num 장 뽑는 시점에서 break
                 break
-
-    ############################################################
-    # Room 모델 정보, RoomImage 모델 체우기 위한 이미지 셀레늄으로 뽑아보겠슴.
-
-    # 버튼 이름 으로쓸 방 이름부터 뽑아내겠슴.
-    room_name_list = []
-    image_table = soup.select('div.roomImageLists')
-    image_table_lis = image_table[0].select('li')
-    for index, image_table_li in enumerate(image_table_lis):
-        if 0 < index < room_num + 1:
-            room_name_list.append(image_table_li.get_text())
-
-    # 접속.
-    chromedriver_dir = '/home/nasanmaro/Desktop/projects/yapen/test/selenium_crawling_test/chromedriver'
-    driver = webdriver.Chrome(chromedriver_dir)
-    driver.get(url)
-    time.sleep(count_sec_after_popup)
-
-    # 방갯수만큼의 버튼을 클릭!
-    image_table = driver.find_element_by_class_name('roomImageLists')
-    for room_name_text in room_name_list:
-        name = room_name_text  # 객실 이름.
-        room_name_button = image_table.find_elements_by_xpath('//li[contains(text(), "{0}") and @class="roomLists"]'.format(room_name_text))
-        room_name_button[0].click()
-        time.sleep(count_sec_after_click)  # 버튼 클릭후 충분히 멈춰줘야 사진이 로딩된다.
-
-        # 드라이버 인스턴스로부터 현제 메뉴 연상태의 페이지 소스 받아서 source에 넣는다.
-        source = driver.page_source
-        # soup 객체로 만듬.
-        soup = BeautifulSoup(source, 'lxml')
-
-        pensionImagesLists = soup.find(id="pensionImagesLists")
-        jssorts = pensionImagesLists.select_one('div.jssort07')
-        jssort = jssorts.select('div')[0]
-        image_tags = jssort.select('div.p > img')
+    room_crawler(soup=soup,
+                 url=url,
+                 pension=pension,
+                 count_sec_after_click=count_sec_after_click,
+                 count_sec_after_popup=count_sec_after_popup,
+                 room_picture_url_num=room_picture_url_num)
 
 
 
-        # room 의 속성들 뽑는중.
-        layer_table_trs = soup.select('div.layerBox > table > tbody > tr')
 
-        td_list1 = layer_table_trs[0].select('td')  # 1행
-        structure = td_list1[1].get_text()  # '객실구조'
-        size = td_list1[3].get_text(strip=True)  # '크기'
-        num_result = re.findall('(\d*)명 / (\d*)명', td_list1[5].get_text())
-        normal_num_poeple = int(num_result[0][0])  # '기준인원'
-        max_num_people = int(num_result[0][1])  # '최대인원'
 
-        td_list2 = layer_table_trs[1].select('td')  # 2행
-        equipments = td_list2[1].get_text()  # 구비시설
 
-        td_list3 = layer_table_trs[2].select('td')  # 3행
-        info = td_list3[1].get_text()  # 객실 설명
 
-        td_list4 = layer_table_trs[3].select(' > td')  # 4행
+# location_name_list 뽑는 과정
+def location_name_list_crawler():
+    request = requests.get("http://www.yapen.co.kr")
+    response = request.text
+    soup = BeautifulSoup(response, 'lxml')
 
-        ######기본금액뽑기.
-        # price table 의 content중 좌상단 한개만 선택해서 기본금액으로 이것만 저장하려함.
-        price_table_td = td_list4[1].select('table.datePriceTbl > tbody > tr > td')
+    left_menu = soup.select('div.locLayer')
+    # 풀빌라, MD추천 제외 14지역중 7지역 만남김.
+    selected_left_menu = left_menu[2:4]
 
-        # 추가할인으로 밑줄 그어진 부분 같은 경우는 이것이 p테그안에 들어가서 따로 구분해줌.
-        price_p_tag = price_table_td[1].select_one('p')
-        if price_p_tag == None:
-            price_p_tag = price_table_td[1]
-        # 100,000원 에서 숫자들만뽑아냄.
-        price = get_int_only(price_p_tag.get_text(strip=True))  # 가격
+    # 여기에 list 형태로 지역,지역고유번호/(세부지역,고유번호) 넣고싶다.
+    # location_name_list =[ [지역1 ,지역1고유번호 , [ (고유번호,세부지역),(고유번호2,세부지역2)...] ],
+    #                       [지역2 ,지역2고유번호 , [ (고유번호,세부지역),(고유번호2,세부지역2)...] ],..
+    location_name_list = list()
 
-        ###### 추가금액 뽑기
-        extra_charge_table_trs = td_list4[3].select('table.datePriceTbl > thead > tr')
-        extra_charge_head = extra_charge_table_trs[0].get_text(strip=True)  # 추가금액 헤드
-        extra_charge_adult_str = extra_charge_table_trs[1].select('td')[1].get_text(strip=True)
-        extra_charge_child_str = extra_charge_table_trs[2].select('td')[1].get_text(strip=True)
-        extra_charge_baby_str = extra_charge_table_trs[3].select('td')[1].get_text(strip=True)
-        # 100,000원 에서 숫자들만뽑아냄.
-        extra_charge_adult = get_int_only(extra_charge_adult_str)  # 어른
-        extra_charge_child = get_int_only(extra_charge_child_str)  # 아동
-        extra_charge_baby = get_int_only(extra_charge_baby_str)  # 유아
+    for location in selected_left_menu:
+        # 지역 이름 먼저 뽑음
+        location_name = location.select('div.titleStyle')[0].get_text(strip=True)
+        location_name_sub_list = list()
+        location_name_sub_list.append(location_name)
 
-        room,room_created_bool = Room.objects.get_or_create(
-            pension=pension,
-            name=name,
-            structure=structure,
-            size=size,
-            normal_num_poeple=normal_num_poeple,
-            max_num_people=max_num_people,
-            equipments=equipments,
-            info=info,
-            price=price,
-            extra_charge_head=extra_charge_head,
-            extra_charge_adult=extra_charge_adult,
-            extra_charge_child=extra_charge_child,
-            extra_charge_baby=extra_charge_baby,
-        )
+        li = location.select('li')
 
-        for index, image_tag in enumerate(image_tags):
-            image_src = image_tag.get("src")  # image_src--------------------->RoomImage객체만들때써라
-            # print('@@룸 이미지')
-            # print(image_src)
-            RoomImage.objects.get_or_create(
-                room=room,
-                room_image=image_src,
-            )
+        # for문 돌면서 (고유번호 세부지역) 리스트에 담은뒤 location_list에 넣겠다.
+        location_detail_list = []
+        for location_detail in li:
+            onclick_value = location_detail['onclick']  # regionMove('1.003021','금산/논산');
 
-            if index == (room_picture_url_num-1):  #  room_picture_url_num 장 뽑는 시점에서 break
-                break
-                # 이 for 문안에서 RoomImage객체 room마다 총세번 만들면될듯
+            split_right = onclick_value.split(',')[0]
+            split_left = onclick_value.split(',')[1]
 
-        # print("@@RoomObject 속성들")
-        # print(name)
-        # print(structure)
-        # print(size)
-        # print(normal_num_poeple)
-        # print(max_num_people)
-        # print(equipments)
-        # print(info)
-        # print(price)
-        #
-        # print(extra_charge_head)
-        # print(extra_charge_adult)
-        # print(extra_charge_child)
-        # print(extra_charge_baby)
+            sub_location_no = re.findall("'(.+)'", split_right)[0]
+            sub_location_name = re.findall("'(.+)'", split_left)[0]
 
-        time.sleep(count_sec_before_end_room_for_loop)
+            flag_for_stop_upper_for = False
+            if len(re.findall('.*(전체).*', sub_location_name))==1: # sub_location_name 에 전체가 들어있으면 for문 이하 건너뜀
+                continue
 
-    driver.close()
+            location_detail_tuple = (sub_location_no, sub_location_name)
+
+            # (고유번호/세부지역) 리스트에 담음
+            location_detail_list.append(location_detail_tuple)
+
+
+        # 지역 고유번호부터 정규표현식으로 뽑아내서 담음.(세부지역 고유번호의 소숫점 뒤 3자리)
+
+        location_detail_no_for_search = location_detail_list[0][0]  # '1.003021'
+        location_detaol_no = re.findall(".(\d\d\d)", location_detail_no_for_search)[0]
+        location_name_sub_list.append(location_detaol_no)
+
+        # location_name_sub_list (고유번호 세부지역) 리스트를 넣음.
+        location_name_sub_list.append(location_detail_list)
+
+        # 상위 리스트에 넣음
+        location_name_list.append(location_name_sub_list)
+
+    return location_name_list
+
 
 
 
