@@ -10,8 +10,12 @@ from .models import Pension
 class PensionList(APIView):
 
     def get(self,request,format=None):
-        pension = Pension.objects.all()
-        serializer = PensionListSerializer(pension, many=True)
+        pensions = Pension.objects.all()
+        serializer = PensionListSerializer(pensions, many=True)
+
+        # new_serializer_data = list(serializer.data)
+        # new_serializer_data.append({'dict_key': 'dict_value'})
+        # return Response(new_serializer_data)
         return Response(serializer.data)
 
 
