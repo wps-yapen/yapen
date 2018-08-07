@@ -12,20 +12,20 @@ __all__ = (
 
 
 class User(AbstractUser):
-    username = models.CharField(max_length=100,unique=True)
-    password = models.CharField(max_length=15)
-    password2 = models.CharField(max_length=15)
+    username = models.CharField(max_length=255,unique=True)
+    password = models.CharField(max_length=255)
+    password2 = models.CharField(max_length=255)
     email = models.EmailField()
-    phone_number = models.CharField(max_length=15)
+    phone_number = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_by = models.DateTimeField(auto_now=True)
-    active = models.BooleanField(default=False)
+
+
 
     @receiver(post_save, sender=settings.AUTH_USER_MODEL)
     def create_auth_token(sender, instance=None, created=False, **kwargs):
         if created:
             Token.objects.create(user=instance)
-
 
     class Meta:
         db_table = "users"
