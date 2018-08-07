@@ -42,11 +42,3 @@ class PensionDetail(APIView):
         serializer = PensionDetailSerializer(pension)
         return Response(serializer.data)
 
-
-class ReservationRoomList(APIView):
-
-    def get(self,request,pk,format=None):
-        pension=Pension.objects.get(pk=pk)
-        rooms = Room.objects.filter(Q(pension=pension))
-        serializer = RoomReservationSerializer(rooms, many=True)
-        return Response(serializer.data)
