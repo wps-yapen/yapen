@@ -20,10 +20,9 @@ User = get_user_model()
 class SignUp(APIView):
     def post(self, request):
         serializer = UserCreateSerializer(data=request.data)
-        print(serializer)
         if serializer.is_valid():
-            print(serializer.validated_data)
             serializer.save()
+
             return Response(serializer.validated_data, status=status.HTTP_200_OK)
 
 
@@ -39,7 +38,7 @@ class UserActivate(APIView):
 
         try:
             if user is not None and account_activation_token.check_token(user, token):
-                user.active = True
+                user.is_active = True
                 user.save()
                 return Response(user.email + '계정이 활성화 되었습니다. ', status=status.HTTP_200_OK)
             else:

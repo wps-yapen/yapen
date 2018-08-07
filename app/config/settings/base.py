@@ -44,11 +44,8 @@ STATICFILES_DIRS = [
 # Application definition
 
 INSTALLED_APPS = [
-    'rest_framework',
     'members',
     'location',
-    'rest_framework.authtoken',
-
 
     'django.contrib.admin',
     'django.contrib.auth',
