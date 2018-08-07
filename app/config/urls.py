@@ -17,6 +17,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
+
 from .views import index
 
 urlpatterns = [
@@ -24,6 +25,9 @@ urlpatterns = [
     path('', index),
     path('members/', include('members.urls')),
     path('location/', include('location.urls'))
+
+
+
 ]
 urlpatterns += static(
     prefix=settings.MEDIA_URL,
