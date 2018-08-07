@@ -4,16 +4,16 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializer.room import  RoomSerializer
+from .serializer.location import LocationSerializer, SubLocationSerializer
 from .serializer.pension import PensionDetailSerializer, PensionListSerializer
-from .models import Pension, Room
+from .models import Pension, Location, SubLocation
 
 
-class PensionList(APIView):
+class PensionLocationsList(APIView):
 
     def get(self,request,format=None):
-        pensions = Pension.objects.all()
-        serializer = PensionListSerializer(pensions, many=True)
+        locations = Location.objects.all()
+        serializer = LocationSerializer(locations, many=True)
 
         # new_serializer_data = list(serializer.data)
         # new_serializer_data.append({'dict_key': 'dict_value'})
@@ -21,11 +21,17 @@ class PensionList(APIView):
         return Response(serializer.data)
 
 
-class PensionLocationList(APIView):
+class PensionSubLocationList(APIView):
+
+    def get_object(self, sub_location_no):
+        try:
+            return  SubLocation.objects.get(sub_location_no=sub_location_no)
+        except SubLocation.DoesNotExist:
+            raise Http404
 
     def get(self,request,sub_location_no,format=None):
-        pensions = Pension.objects.filter(Q(sub_location_no=sub_location_no))
-        serializer = PensionListSerializer(pensions,many=True)
+        sublocation = self.get_object(sub_location_no=sub_location_no)
+        serializer = SubLocationSerializer(sublocation)
         return Response(serializer.data)
 
 

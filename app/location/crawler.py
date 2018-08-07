@@ -384,11 +384,6 @@ def sub_location_crawler(location_no, sub_location_no):
 
 
 
-
-
-
-
-
 # location_name_list 뽑는 과정
 def location_crawler():
     request = requests.get("http://www.yapen.co.kr")
@@ -436,85 +431,3 @@ def location_crawler():
                    ypidx=sub_locations_info_list[3][i],  # ypidx,
                    discount_rate=sub_locations_info_list[4][i]   # discount_rate,
                )
-
-
-
-
-
-
-
-
-#
-#
-#
-# ###########################################################################################
-# ##location_name_list 로부터 지역명,고유번호 받아서 각 세부지역별로 pension_crawler
-# ## 해서 기본정보 5개씩 모으는 크롤러##(
-# # 세부 지역별 메인페이지만 crawling해서 정보 5개만 가지고 사진 여러장 있는 페이지만 띄우고 싶다면 (디테일 크롤링하지 않더라도) 이것만 돌리됨.
-#
-#
-# def location_crawler():
-#     location_info_list = list()
-#
-#     location_name_list = location_name_list_crawler()
-#     # location_name_list =[ [지역1 ,지역1고유번호 , [ (고유번호,세부지역),(고유번호2,세부지역2)...] ],
-#     #                       [지역2 ,지역2고유번호 , [ (고유번호,세부지역),(고유번호2,세부지역2)...] ],..
-#
-#     for location in location_name_list:
-#         location_name = location[0]
-#         location_no = location[1]
-#         sub_location_list = location[2]
-#         for sub_location in sub_location_list:
-#             print(sub_location)
-#             sub_location_no = sub_location[0]
-#             sub_location_name = sub_location[1]
-#             sub_locations_info_list = pension_crawler(location_no, sub_location_no)
-#
-#             # 기존에 pension모델 1차적으로 이름,가격,이미지로  만들던것에
-#             # location, sub_location 속성 추가해서 이곳에서 만들면 될듯하다.
-#             # 일단은 리스트 형태로 정보 7개 묶어서 저장해보겠음.
-#             # [[location,sub_location,title,pricem,img_file,ypidx,discount_rate]....팬션 999까지 한 리스트에
-#
-#             for i in range(len(sub_locations_info_list[0])):
-#                 location_info_list.append([location_name,
-#                                            sub_location_name,
-#                                            sub_location_no,
-#                                            sub_locations_info_list[0][i],  # name
-#                                            sub_locations_info_list[1][i],  # lowest_price
-#                                            sub_locations_info_list[2][i],  # pension_image_thumbnail
-#                                            sub_locations_info_list[3][i],  # ypidx
-#                                            sub_locations_info_list[4][i]   # discount_rate
-#                                            ])
-#
-#     return location_info_list
-#
-#
-#
-# # 전지역 크롤링하고 지역 > 세부지역 안의 팬션 > 방 정보 모두 크롤링후 오브젝트에 넣는 통합적인 크롤러.
-# def location_crawler_total():
-#
-#     # 지역/세부지역/팬션이름/최저가/팬션이미지썸네일/ypidx/할인율  크롤러로 크롤링 후 결과 list로 받음.
-#     location_info_list = location_crawler()
-#
-#     for pension_info in location_info_list:
-#         location = pension_info[0]
-#         sub_location = pension_info[1]
-#         sub_location_no = pension_info[2]
-#         name = pension_info[3]
-#         lowest_price = pension_info[4]
-#         pension_image_thumbnail = pension_info[5]
-#         ypidx = pension_info[6]
-#         discount_rate = pension_info[7]
-#
-#         # pension_detail_crawler에 location_crawler 에서 탐색한 기본 7정보 넣어주면
-#         # pension_detail 페이지에서 추가속성들 10개더 찾아서 Pension 객체 만듬.
-#         # pension_detail_crawler 안에서 해당 Pension에 소속된 Room 들의 정보 크롤링하고 Room 객체들까지 만듬.
-#         pension_detail_crawler(
-#             pension_image_thumbnail=pension_image_thumbnail,
-#             lowest_price=lowest_price,
-#             ypidx=ypidx,
-#             location=location,
-#             sub_location=sub_location,
-#             sub_location_no=sub_location_no,
-#             discount_rate=discount_rate,
-#         )

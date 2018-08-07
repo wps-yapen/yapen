@@ -31,11 +31,7 @@ class PensionBaseSerializer(serializers.ModelSerializer):
             'pension_image_thumbnail',
             'lowest_price',
             'discount_rate',
-            'location',
-            'sub_location',
-            'sub_location_no'
         )
-
 
 class PensionListSerializer(PensionBaseSerializer):
     pass
