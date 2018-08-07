@@ -4,7 +4,7 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializer.room import RoomReservationSerializer, RoomSerializer
+from .serializer.room import  RoomSerializer
 from .serializer.pension import PensionDetailSerializer, PensionListSerializer
 from .models import Pension, Room
 
