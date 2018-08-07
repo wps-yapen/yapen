@@ -27,7 +27,7 @@ class SubLocation(models.Model):
 # pension image는 1장이라서 바로 pension모델의 속성으로 저장하고
 # room에 속하는 image들은 따로 roomimage테이블 만들어서 foreingkey로 room과 연결함. many가 roomimage, one이 room
 class Pension(models.Model):
-    sub_location = models.ForeignKey(SubLocation, related_name='pensoins',on_delete=models.CASCADE)
+    sub_location = models.ForeignKey(SubLocation, related_name='pensions',on_delete=models.CASCADE)
     # 세부지역 메이페이지에서 크롤링할때 체우는 속성
     name = models.TextField(blank=True) # '팬션이름'
     pension_image_thumbnail = models.ImageField(upload_to='pension', blank=True) # '팬션 이미지' # 해커톤때 photo # MEDIA_ROOT의세부경로가 upload_to에 들어감.
