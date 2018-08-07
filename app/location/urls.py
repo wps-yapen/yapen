@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import PensionList, PensionDetail, PensionLocationList, ReservationRoomList
+from .views import PensionList, PensionDetail, PensionLocationList
 
 urlpatterns = [
     path('pension/',
@@ -12,8 +12,4 @@ urlpatterns = [
     path('pension/<str:sub_location_no>/<int:pk>/',
          PensionDetail.as_view(),
          name='PensionList'),
-
-    path('ReservatoinRoomList/<int:pk>/',
-         ReservationRoomList.as_view(),
-             name='ReservationRoomList'),
 ]

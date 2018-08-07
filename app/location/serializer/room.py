@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from ..models import Pension, Room, RoomImage, PensionImage
+from ..models import  Room, RoomImage, Reservation
 
 __all__ = (
 
@@ -7,7 +7,16 @@ __all__ = (
     'RoomSerializer',
     'RoomReservationSerializer',
     'RoomImageSerializer',
+
+    'Reservation',
 )
+
+class ReservationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Reservation
+        fields=(
+            'date'
+        )
 
 
 class RoomImageSerializer(serializers.ModelSerializer):
@@ -43,13 +52,16 @@ class RoomSerializer(RoomBaseSerializer):
         'roomimages',
         )
 
-
+#
 class RoomReservationSerializer(RoomBaseSerializer):
-
-    class Meta(RoomBaseSerializer.Meta):
-        fields = RoomBaseSerializer.Meta.fields + (
-        'extra_charge_head' ,
-        'extra_charge_adult' ,
-        'extra_charge_child' ,
-        'extra_charge_baby',
-        )
+#     reservations=
+#
+#     class Meta(RoomBaseSerializer.Meta):
+#         fields = RoomBaseSerializer.Meta.fields + (
+#         'extra_charge_head' ,
+#         'extra_charge_adult' ,
+#         'extra_charge_child' ,
+#         'extra_charge_baby',
+#         'reservations',
+#         )
+    pass
