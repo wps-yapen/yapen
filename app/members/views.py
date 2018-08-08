@@ -24,7 +24,7 @@ class SignUp(APIView):
             serializer.save()
 
             return Response(serializer.validated_data, status=status.HTTP_200_OK)
-
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class UserActivate(APIView):
     permission_classes = (permissions.AllowAny,)
@@ -58,7 +58,6 @@ class AuthToken(APIView):
 
             data = {
                 'token' : token.key,
-
             }
             return Response(data, status=status.HTTP_200_OK)
         else:
