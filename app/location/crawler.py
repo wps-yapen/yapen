@@ -31,7 +31,7 @@ def room_crawler(soup,room_num,url,pension,count_sec_after_popup,count_sec_after
             room_name_list.append(image_table_li.get_text())
 
     # 접속.
-    chromedriver_dir = 'Users/apple/Downloads/chromedriver'
+    chromedriver_dir = '/Users/apple/Downloads/chromedriver'
     driver = webdriver.Chrome(chromedriver_dir)
     driver.get(url)
     time.sleep(count_sec_after_popup)
