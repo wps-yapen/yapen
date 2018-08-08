@@ -1,6 +1,7 @@
 from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import render
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -18,7 +19,7 @@ class PensionLocationsList(APIView):
         # new_serializer_data = list(serializer.data)
         # new_serializer_data.append({'dict_key': 'dict_value'})
         # return Response(new_serializer_data)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class PensionSubLocationList(APIView):
@@ -32,7 +33,7 @@ class PensionSubLocationList(APIView):
     def get(self,request,sub_location_no,format=None):
         sublocation = self.get_object(sub_location_no=sub_location_no)
         serializer = SubLocationSerializer(sublocation)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class PensionDetail(APIView):
@@ -46,5 +47,5 @@ class PensionDetail(APIView):
     def get(self,request,sub_location_no,pk,format=None):
         pension = self.get_object(pk=pk)
         serializer = PensionDetailSerializer(pension)
-        return Response(serializer.data)
+        return Response(serializer.data,status=status.HTTP_200_OK)
 
