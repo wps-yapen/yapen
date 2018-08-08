@@ -5,7 +5,7 @@ import time
 from urllib import parse
 from selenium import webdriver
 
-from location.models import Pension, RoomImage, PensionImage, Room
+from .models import Pension, Room, RoomImage, PensionImage
 
 # 가격에 string, 100,00 표현 맞지 않는 경우 0넣고 아니면 int로 바꿔서 출력
 def get_int_only(string):
@@ -30,7 +30,7 @@ def room_crawler(soup,room_num,url,pension,count_sec_after_popup,count_sec_after
             room_name_list.append(image_table_li.get_text())
 
     # 접속.
-    chromedriver_dir = '/home/nasanmaro/Desktop/projects/yapen/test/selenium_crawling_test/chromedriver'
+    chromedriver_dir = '/Users/apple/Downloads/chromedriver'
     driver = webdriver.Chrome(chromedriver_dir)
     driver.get(url)
     time.sleep(count_sec_after_popup)
@@ -38,7 +38,8 @@ def room_crawler(soup,room_num,url,pension,count_sec_after_popup,count_sec_after
     # 방갯수만큼의 버튼을 클릭!
     image_table = driver.find_element_by_class_name('roomImageLists')
     for room_name_text in room_name_list:
-        name = room_name_text  # 객실 이름.
+        name = room_name_text  # 객실 이름.4
+
         room_name_button = image_table.find_elements_by_xpath('//li[contains(text(), "{0}") and @class="roomLists"]'.format(room_name_text))
         room_name_button[0].click()
         time.sleep(count_sec_after_click)  # 버튼 클릭후 충분히 멈춰줘야 사진이 로딩된다.
@@ -396,7 +397,7 @@ def location_name_list_crawler():
 
     left_menu = soup.select('div.locLayer')
     # 풀빌라, MD추천 제외 14지역중 7지역 만남김.
-    selected_left_menu = left_menu[2:4]
+    selected_left_menu = left_menu[3:4]
 
     # 여기에 list 형태로 지역,지역고유번호/(세부지역,고유번호) 넣고싶다.
     # location_name_list =[ [지역1 ,지역1고유번호 , [ (고유번호,세부지역),(고유번호2,세부지역2)...] ],
@@ -520,3 +521,5 @@ def location_crawler_total():
             sub_location_no=sub_location_no,
             discount_rate=discount_rate,
         )
+
+
