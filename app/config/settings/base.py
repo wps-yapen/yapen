@@ -44,11 +44,8 @@ STATICFILES_DIRS = [
 # Application definition
 
 INSTALLED_APPS = [
-    'rest_framework',
     'members',
     'location',
-    'rest_framework.authtoken',
-
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -141,6 +138,4 @@ EMAIL_HOST_USER = secrets['EMAIL_HOST_USER']
 EMAIL_HOST_PASSWORD = secrets['EMAIL_HOST_PASSWORD']
 SERVER_EMAIL = secrets['SERVER_EMAIL']
 DEFAULT_FROM_MAIL = secrets['DEFAULT_FROM_MAIL']
-
-
 

@@ -5,7 +5,6 @@ from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
 from rest_framework import status, permissions
 from rest_framework.authtoken.models import Token
-from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.compat import authenticate
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
@@ -21,10 +20,9 @@ User = get_user_model()
 class SignUp(APIView):
     def post(self, request):
         serializer = UserCreateSerializer(data=request.data)
-        print(serializer)
         if serializer.is_valid():
-            print(serializer.validated_data)
             serializer.save()
+
             return Response(serializer.validated_data, status=status.HTTP_200_OK)
 
 
@@ -40,7 +38,7 @@ class UserActivate(APIView):
 
         try:
             if user is not None and account_activation_token.check_token(user, token):
-                user.active = True
+                user.is_active = True
                 user.save()
                 return Response(user.email + '계정이 활성화 되었습니다. ', status=status.HTTP_200_OK)
             else:

@@ -17,6 +17,7 @@ djangorestframework = "*"
 utils = "*"
 django-rest-auth = "*"
 update = "*"
+requests = "*"
 
 [dev-packages]
 awsebcli = "*"
