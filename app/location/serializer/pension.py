@@ -31,11 +31,9 @@ class PensionBaseSerializer(serializers.ModelSerializer):
             'pension_image_thumbnail',
             'lowest_price',
             'discount_rate',
-            'location',
-            'sub_location',
-            'sub_location_no'
+            'lat',
+            'lng',
         )
-
 
 class PensionListSerializer(PensionBaseSerializer):
     pass
@@ -54,8 +52,6 @@ class PensionDetailSerializer(PensionBaseSerializer):
             'room_num',
             'info',
             'theme',
-            'lat',
-            'lng',
             'check_in_out_detail',
             'pickup_detail',
             'gretting',
