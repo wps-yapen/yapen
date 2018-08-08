@@ -1,15 +1,15 @@
 from django.urls import path
 
-from .views import PensionList, PensionDetail, PensionLocationList
+from .views import PensionLocationsList, PensionDetail, PensionSubLocationList
 
 urlpatterns = [
-    path('pension/',
-         PensionList.as_view(),
+    path('',
+         PensionLocationsList.as_view(),
          name='PensionList'),
-    path('pension/<str:sub_location_no>/',
-         PensionLocationList.as_view(),
+    path('<str:sub_location_no>/',
+         PensionSubLocationList.as_view(),
          name='PensionLocationList'),
-    path('pension/<str:sub_location_no>/<int:pk>/',
+    path('<str:sub_location_no>/<int:pk>/',
          PensionDetail.as_view(),
          name='PensionList'),
 ]
