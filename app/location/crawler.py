@@ -5,7 +5,8 @@ import time
 from urllib import parse
 from selenium import webdriver
 
-from .models import Pension, Room, RoomImage, PensionImage
+from location.models import Pension, RoomImage, PensionImage, Room, Location, SubLocation
+
 
 # 가격에 string, 100,00 표현 맞지 않는 경우 0넣고 아니면 int로 바꿔서 출력
 def get_int_only(string):
@@ -30,7 +31,7 @@ def room_crawler(soup,room_num,url,pension,count_sec_after_popup,count_sec_after
             room_name_list.append(image_table_li.get_text())
 
     # 접속.
-    chromedriver_dir = '/Users/apple/Downloads/chromedriver'
+    chromedriver_dir = '/home/nasanmaro/Desktop/projects/yapen/test/selenium_crawling_test/chromedriver'
     driver = webdriver.Chrome(chromedriver_dir)
     driver.get(url)
     time.sleep(count_sec_after_popup)
@@ -38,8 +39,7 @@ def room_crawler(soup,room_num,url,pension,count_sec_after_popup,count_sec_after
     # 방갯수만큼의 버튼을 클릭!
     image_table = driver.find_element_by_class_name('roomImageLists')
     for room_name_text in room_name_list:
-        name = room_name_text  # 객실 이름.4
-
+        name = room_name_text  # 객실 이름.
         room_name_button = image_table.find_elements_by_xpath('//li[contains(text(), "{0}") and @class="roomLists"]'.format(room_name_text))
         room_name_button[0].click()
         time.sleep(count_sec_after_click)  # 버튼 클릭후 충분히 멈춰줘야 사진이 로딩된다.
@@ -153,68 +153,10 @@ def room_crawler(soup,room_num,url,pension,count_sec_after_popup,count_sec_after
 
     driver.close()
 
-# 이제 각 페이지 location 가서 해커톤때 쓴 pension crawler 돌리고 싶다.
-# 메인페이지에서 기본정보 3개만 여러개 팬션에게서 가져왔던것.
-def pension_crawler(location_no, sub_location_no):
-    params = {
-        'location': location_no,
-        'subLocation': sub_location_no,
-    }
-
-    url = "http://www.yapen.co.kr/region?" + parse.urlencode(params)
-
-    request = requests.get(url)
-    response = request.text
-    soup = BeautifulSoup(response, 'lxml')
-
-    title_list = list()
-    img_file_list = list()
-    price_list = list()
-    ypidx_list = list()
-    discount_rate_list = list()
-
-    title_uls = soup.select('ul.dest-place-opt-fea')
-    for ul in title_uls:
-        li = ul.select('li')
-        title_list.append(li[1].get_text())
-
-    price_uls = soup.select('ul.dest-place-opt-cast')
-    for ul in price_uls:
-        li = ul.select('li')
-        price_list.append(get_int_only(li[1].get_text())) # '370,000원~' 에서 숫자만 남기는 함수 호출함.
-
-    img_file_divs = soup.select('div.imgBox')
-    for div in img_file_divs:
-        img_file_list.append(div.select('img')[0]['src'])
-
-        list1 = re.split('/', div.select('img')[0]['src'])
-        ypidx_list.append(int(list1[5]))
-
-    dest_place_pics = soup.select('div.dest-place-pic')
-    for dest_place_pic in dest_place_pics:
-        # dest_place_pic에는 dic가 2개 or 1게 있는데  discount_rate가 있는 경우는 div가 2개이며
-        # 길이가 5여서 이것으로 discount_rate있고 없고 를 비교한다.
-        if (len(dest_place_pic) == 5):
-            discount_rate_string = dest_place_pic.select('div')[0].get_text(strip=True)
-            # %문자 정규표현식으로 빼줌.
-            discount_rate_int = int(re.search('(\d*)', discount_rate_string).group())
-            discount_rate_list.append(discount_rate_int)
-        else:
-            discount_rate_list.append(0)
-
-    sub_locations_info_list = [title_list, price_list, img_file_list, ypidx_list, discount_rate_list]
-
-    return sub_locations_info_list
 
 
 
-def pension_detail_crawler(pension_image_thumbnail,
-                           lowest_price,
-                           ypidx,
-                           location,
-                           sub_location,
-                           sub_location_no,
-                           discount_rate):
+def pension_detail_crawler(sub_location,lowest_price,pension_image_thumbnail,ypidx,discount_rate):
     max_room_num = 4
     pension_picture_url_num = 2  # 저장할 pension 이미지 url 1이상으로 설정해야함.
     room_picture_url_num = 2  # 저장할 room 이미지 url 1이상으로 설정해야함.
@@ -336,9 +278,7 @@ def pension_detail_crawler(pension_image_thumbnail,
             pension_image_thumbnail=pension_image_thumbnail,
             lowest_price=lowest_price,
             ypidx=ypidx,
-            location=location,
             sub_location=sub_location,
-            sub_location_no=sub_location_no,
             discount_rate=discount_rate,
 
     #pension_detail_crawler 안에서 크롤링한 속성들.
@@ -375,6 +315,8 @@ def pension_detail_crawler(pension_image_thumbnail,
             )
             if index == (pension_picture_url_num-1)*2:  # pension_picture_url_num 장 뽑는 시점에서 break
                 break
+
+    # 각 팬션에 속한 room정보 크롤링하며 Room객체 생성하는 크롤러
     room_crawler(soup=soup,
                  room_num=room_num,
                  url=url,
@@ -388,138 +330,104 @@ def pension_detail_crawler(pension_image_thumbnail,
 
 
 
+#  세부지역 페이지에서 각 팬션에 대한 기본정보 5개만 여러개 팬션에게서 가져왔던것.
+def sub_location_crawler(location_no, sub_location_no):
+    params = {
+        'location': location_no,
+        'subLocation': sub_location_no,
+    }
+
+    url = "http://www.yapen.co.kr/region?" + parse.urlencode(params)
+
+    request = requests.get(url)
+    response = request.text
+    soup = BeautifulSoup(response, 'lxml')
+
+    title_list = list()
+    img_file_list = list()
+    price_list = list()
+    ypidx_list = list()
+    discount_rate_list = list()
+
+    title_uls = soup.select('ul.dest-place-opt-fea')
+    for ul in title_uls:
+        li = ul.select('li')
+        title_list.append(li[1].get_text())
+
+    price_uls = soup.select('ul.dest-place-opt-cast')
+    for ul in price_uls:
+        li = ul.select('li')
+        price_list.append(get_int_only(li[1].get_text())) # '370,000원~' 에서 숫자만 남기는 함수 호출함.
+
+    img_file_divs = soup.select('div.imgBox')
+    for div in img_file_divs:
+        img_file_list.append(div.select('img')[0]['src'])
+
+        list1 = re.split('/', div.select('img')[0]['src'])
+        ypidx_list.append(int(list1[5]))
+
+    dest_place_pics = soup.select('div.dest-place-pic')
+    for dest_place_pic in dest_place_pics:
+        # dest_place_pic에는 dic가 2개 or 1게 있는데  discount_rate가 있는 경우는 div가 2개이며
+        # 길이가 5여서 이것으로 discount_rate있고 없고 를 비교한다.
+        if (len(dest_place_pic) == 5):
+            discount_rate_string = dest_place_pic.select('div')[0].get_text(strip=True)
+            # %문자 정규표현식으로 빼줌.
+            discount_rate_int = int(re.search('(\d*)', discount_rate_string).group())
+            discount_rate_list.append(discount_rate_int)
+        else:
+            discount_rate_list.append(0)
+
+    sub_locations_info_list = [title_list, price_list, img_file_list, ypidx_list, discount_rate_list]
+
+    return sub_locations_info_list
+
+
 
 # location_name_list 뽑는 과정
-def location_name_list_crawler():
+def location_crawler():
     request = requests.get("http://www.yapen.co.kr")
     response = request.text
     soup = BeautifulSoup(response, 'lxml')
 
     left_menu = soup.select('div.locLayer')
     # 풀빌라, MD추천 제외 14지역중 7지역 만남김.
-    selected_left_menu = left_menu[3:4]
+    selected_left_menu = left_menu[2:4]
 
-    # 여기에 list 형태로 지역,지역고유번호/(세부지역,고유번호) 넣고싶다.
-    # location_name_list =[ [지역1 ,지역1고유번호 , [ (고유번호,세부지역),(고유번호2,세부지역2)...] ],
-    #                       [지역2 ,지역2고유번호 , [ (고유번호,세부지역),(고유번호2,세부지역2)...] ],..
-    location_name_list = list()
-
-    for location in selected_left_menu:
+    for selected_location in selected_left_menu:
         # 지역 이름 먼저 뽑음
-        location_name = location.select('div.titleStyle')[0].get_text(strip=True)
-        location_name_sub_list = list()
-        location_name_sub_list.append(location_name)
+        location_name = selected_location.select('div.titleStyle')[0].get_text(strip=True)
 
-        li = location.select('li')
+        # Location 객체 생성
+        location,__=Location.objects.get_or_create(name=location_name)                                  # Location(지역)객체 생성
 
-        # for문 돌면서 (고유번호 세부지역) 리스트에 담은뒤 location_list에 넣겠다.
-        location_detail_list = []
+        li = selected_location.select('li')
         for location_detail in li:
             onclick_value = location_detail['onclick']  # regionMove('1.003021','금산/논산');
-
             split_right = onclick_value.split(',')[0]
             split_left = onclick_value.split(',')[1]
-
             sub_location_no = re.findall("'(.+)'", split_right)[0]
             sub_location_name = re.findall("'(.+)'", split_left)[0]
-
-            flag_for_stop_upper_for = False
             if len(re.findall('.*(전체).*', sub_location_name))==1: # sub_location_name 에 전체가 들어있으면 for문 이하 건너뜀
                 continue
 
-            location_detail_tuple = (sub_location_no, sub_location_name)
+            # SubLocation 객체 생성
+            sub_location,__= SubLocation.objects.get_or_create(location=location,                       # SubLocation(세부지역) 객체 생성
+                                                               name=sub_location_name,
+                                                               sub_location_no=sub_location_no)
 
-            # (고유번호/세부지역) 리스트에 담음
-            location_detail_list.append(location_detail_tuple)
+            # 지역 고유번호부터 정규표현식으로 뽑아내서 담음.(세부지역 고유번호의 소숫점 뒤 3자리) # '1.003021'
+            location_no = re.findall(".(\d\d\d)", sub_location_no)[0] # 지역번호
 
-
-        # 지역 고유번호부터 정규표현식으로 뽑아내서 담음.(세부지역 고유번호의 소숫점 뒤 3자리)
-
-        location_detail_no_for_search = location_detail_list[0][0]  # '1.003021'
-        location_detaol_no = re.findall(".(\d\d\d)", location_detail_no_for_search)[0]
-        location_name_sub_list.append(location_detaol_no)
-
-        # location_name_sub_list (고유번호 세부지역) 리스트를 넣음.
-        location_name_sub_list.append(location_detail_list)
-
-        # 상위 리스트에 넣음
-        location_name_list.append(location_name_sub_list)
-
-    return location_name_list
-
-
-
-
-###########################################################################################
-##location_name_list 로부터 지역명,고유번호 받아서 각 세부지역별로 pension_crawler
-## 해서 기본정보 5개씩 모으는 크롤러##(
-# 세부 지역별 메인페이지만 crawling해서 정보 5개만 가지고 사진 여러장 있는 페이지만 띄우고 싶다면 (디테일 크롤링하지 않더라도) 이것만 돌리됨.
-
-
-def location_crawler():
-    location_info_list = list()
-
-    location_name_list = location_name_list_crawler()
-    # location_name_list =[ [지역1 ,지역1고유번호 , [ (고유번호,세부지역),(고유번호2,세부지역2)...] ],
-    #                       [지역2 ,지역2고유번호 , [ (고유번호,세부지역),(고유번호2,세부지역2)...] ],..
-
-    for location in location_name_list:
-        location_name = location[0]
-        location_no = location[1]
-        sub_location_list = location[2]
-        for sub_location in sub_location_list:
-            print(sub_location)
-            sub_location_no = sub_location[0]
-            sub_location_name = sub_location[1]
-            sub_locations_info_list = pension_crawler(location_no, sub_location_no)
-
-            # 기존에 pension모델 1차적으로 이름,가격,이미지로  만들던것에
-            # location, sub_location 속성 추가해서 이곳에서 만들면 될듯하다.
-            # 일단은 리스트 형태로 정보 7개 묶어서 저장해보겠음.
-            # [[location,sub_location,title,pricem,img_file,ypidx,discount_rate]....팬션 999까지 한 리스트에
-
+            # sub_location(세부지역) 페이지로부터 기본정보 5개 크롤링먼저 해옴.(팬션 디테일 페이지 접속위한 ypidx얻기위해 필요한 과정)
+            sub_locations_info_list = sub_location_crawler(location_no, sub_location_no)
             for i in range(len(sub_locations_info_list[0])):
-                location_info_list.append([location_name,
-                                           sub_location_name,
-                                           sub_location_no,
-                                           sub_locations_info_list[0][i],  # name
-                                           sub_locations_info_list[1][i],  # lowest_price
-                                           sub_locations_info_list[2][i],  # pension_image_thumbnail
-                                           sub_locations_info_list[3][i],  # ypidx
-                                           sub_locations_info_list[4][i]   # discount_rate
-                                           ])
 
-    return location_info_list
-
-
-
-# 전지역 크롤링하고 지역 > 세부지역 안의 팬션 > 방 정보 모두 크롤링후 오브젝트에 넣는 통합적인 크롤러.
-def location_crawler_total():
-
-    # 지역/세부지역/팬션이름/최저가/팬션이미지썸네일/ypidx/할인율  크롤러로 크롤링 후 결과 list로 받음.
-    location_info_list = location_crawler()
-
-    for pension_info in location_info_list:
-        location = pension_info[0]
-        sub_location = pension_info[1]
-        sub_location_no = pension_info[2]
-        name = pension_info[3]
-        lowest_price = pension_info[4]
-        pension_image_thumbnail = pension_info[5]
-        ypidx = pension_info[6]
-        discount_rate = pension_info[7]
-
-        # pension_detail_crawler에 location_crawler 에서 탐색한 기본 7정보 넣어주면
-        # pension_detail 페이지에서 추가속성들 10개더 찾아서 Pension 객체 만듬.
-        # pension_detail_crawler 안에서 해당 Pension에 소속된 Room 들의 정보 크롤링하고 Room 객체들까지 만듬.
-        pension_detail_crawler(
-            pension_image_thumbnail=pension_image_thumbnail,
-            lowest_price=lowest_price,
-            ypidx=ypidx,
-            location=location,
-            sub_location=sub_location,
-            sub_location_no=sub_location_no,
-            discount_rate=discount_rate,
-        )
-
-
+                # 각각의 팬션을 크롤링 하며 Pension객체 생성, 방들 크롤링한후 Room 객체 생성하는 크롤러 호출
+                pension_detail_crawler(
+                   sub_location=sub_location,
+                   lowest_price=sub_locations_info_list[1][i],  # lowest_price,
+                   pension_image_thumbnail=sub_locations_info_list[2][i],  # pension_image_thumbnail
+                   ypidx=sub_locations_info_list[3][i],  # ypidx,
+                   discount_rate=sub_locations_info_list[4][i]   # discount_rate,
+               )

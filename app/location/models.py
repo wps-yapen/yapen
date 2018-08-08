@@ -9,26 +9,30 @@ __all__ = (
     'Room',
     'PensionImage',
     'RoomImage',
-    'Reservation',
     'Comment',
     'PensionLike',
 )
 
 
+class Location(models.Model):
+    name = models.TextField(blank=True) # 지역이름
+    location_no = models.TextField(blank=True)# 지역 번호
+
+
+class SubLocation(models.Model):
+    location = models.ForeignKey(Location,related_name='sublocations',on_delete=models.CASCADE)
+    name = models.TextField(blank=True) # 세부지역이름
+    sub_location_no = models.TextField(blank=True)# 세부지역 번호
 
 # pension image는 1장이라서 바로 pension모델의 속성으로 저장하고
 # room에 속하는 image들은 따로 roomimage테이블 만들어서 foreingkey로 room과 연결함. many가 roomimage, one이 room
-
-# Create your models here.
 class Pension(models.Model):
+    sub_location = models.ForeignKey(SubLocation, related_name='pensions',on_delete=models.CASCADE)
     # 세부지역 메이페이지에서 크롤링할때 체우는 속성
     name = models.TextField(blank=True) # '팬션이름'
     pension_image_thumbnail = models.ImageField(upload_to='pension', blank=True) # '팬션 이미지' # 해커톤때 photo # MEDIA_ROOT의세부경로가 upload_to에 들어감.
     lowest_price = models.IntegerField(default=0, blank=True) # '최저가'  # 해커톤때 price
     ypidx = models.IntegerField(default=0, blank=True) # '팬션별 고유번호'
-    location = models.TextField(blank=True) #지역
-    sub_location = models.TextField(blank=True)# 세부지역
-    sub_location_no = models.TextField(blank=True)# 세부지역 번호
     discount_rate = models.IntegerField(default=0,blank=True)# 할인률
 
     # pension-detail 페이지에서 크롤링해서 채우는 속성
@@ -85,6 +89,7 @@ class RoomImage(models.Model):
     room= models.ForeignKey(Room,related_name='roomimages',on_delete=models.CASCADE,)
     room_image = models.ImageField(upload_to='room', blank=True, max_length=1000) # '방 이미지'
 
+
 # 반대쪽 입장에서 이것이 뭔지 생각해서 related_name 정한다.
 class Reservation(models.Model):
     room = models.ForeignKey(Room,related_name='reservations', on_delete=models.CASCADE)
@@ -102,6 +107,7 @@ class Reservation(models.Model):
     # 결제방법 - > 무통장 입금 관련 정보
     deposit_bank = models.CharField( max_length=100,blank=True) # 입금은행
     depositor_name = models.CharField( max_length=100,blank=True) # 입금자명
+
 
 class Comment(models.Model):
     pension = models.ForeignKey(
