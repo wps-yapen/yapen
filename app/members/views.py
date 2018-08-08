@@ -24,7 +24,7 @@ class SignUp(APIView):
             serializer.save()
 
             return Response(serializer.validated_data, status=status.HTTP_200_OK)
-
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class UserActivate(APIView):
     permission_classes = (permissions.AllowAny,)
@@ -58,7 +58,6 @@ class AuthToken(APIView):
 
             data = {
                 'token' : token.key,
-
             }
             return Response(data, status=status.HTTP_200_OK)
         else:
@@ -89,6 +88,18 @@ class UserChangePassword(APIView):
 
         else:
             return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+
+
+class Deletetoken(APIView):
+    def get(self, request):
+
+        if request.user.is_authenticated:
+            request.user.auth_token.delete()
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
 
 
 
