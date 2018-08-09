@@ -90,5 +90,17 @@ class UserChangePassword(APIView):
             return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
 
 
+class Deletetoken(APIView):
+    def get(self, request):
+
+        if request.user.is_authenticated:
+            request.user.auth_token.delete()
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
 
 
