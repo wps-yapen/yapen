@@ -7,9 +7,14 @@ from location.models import Room
 class Reservation(models.Model):
   room = models.ForeignKey(Room,related_name='reservations', on_delete=models.CASCADE)
   user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+<<<<<<< HEAD
   checkin_date = models.DateTimeField(auto_now=False, auto_now_add=False, blank=True)
   checkout_date = models.DateTimeField(auto_now=False, auto_now_add=False, blank=True)
   reservation_price = models.IntegerField(default=0, blank=True)
+=======
+  checkin_date = models.DateField(auto_now=False, auto_now_add=False, blank=True)
+  checkout_date = models.DateField(auto_now=False, auto_now_add=False, blank=True)
+>>>>>>> dev
 
   # 예약페이지 상세정보
   subscriber = models.CharField( max_length=100,blank=True) # 예약자 이름
