@@ -55,7 +55,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
         message = render_to_string('user/account_activate_email.html', {
             'user' : user,
-            'domain' : 'pmb.kr',
+            'domain' : 'localhost:8000',
             'uid' : urlsafe_base64_encode(force_bytes(user.pk)).decode('utf-8'),
             'token' : account_activation_token.make_token(user)
         })
