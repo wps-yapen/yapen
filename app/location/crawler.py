@@ -32,7 +32,7 @@ def room_crawler(soup,room_num,url,pension,count_sec_after_popup,count_sec_after
 
     # 접속.
 
-    chromedriver_dir = '/Users/apple/Downloads/chromedriver'
+    chromedriver_dir = '/home/nasanmaro/Desktop/projects/yapen/test/selenium_crawling_test/chromedriver'
 
     driver = webdriver.Chrome(chromedriver_dir)
     driver.get(url)
