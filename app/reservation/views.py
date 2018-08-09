@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 
 from location.models import Room
 from location.serializer import pension
+from reservation.models import Reservation
 from reservation.serializer.reservation import RoomReservationSerializer
 
 
@@ -16,8 +17,12 @@ class ReservationRoom(APIView):
 		year = int(list1[0])
 		month = int(list1[1])
 		day = int(list1[2])
-		date_result = datetime.date(year, month, day)
-		print(date_result)
-		rooms = Room.objects.filter(reservations__checkin_date = date_result)
+		target_date = datetime.date(year, month, day)
+		reservated_list = Reservation.objects.filter(checkin_date__lte = target_date, checkout_date__gte = target_date)
+		reservated_room_pk_list = []
+		for reservation in reservated_list:
+			if reservation.room.pension.pk == pk:
+				reservated_room_pk_list.append(reservation.room.pk)
+		rooms = Room.objects.filter(pension=pk).exclude(pk__in=reservated_room_pk_list)
 		serializer = RoomReservationSerializer(rooms, many=True)
 		return Response(serializer.data)
