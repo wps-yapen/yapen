@@ -9,6 +9,7 @@ class Reservation(models.Model):
   user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
   checkin_date = models.DateTimeField(auto_now=False, auto_now_add=False, blank=True)
   checkout_date = models.DateTimeField(auto_now=False, auto_now_add=False, blank=True)
+  reservation_price = models.IntegerField(default=0, blank=True)
 
   # 예약페이지 상세정보
   subscriber = models.CharField( max_length=100,blank=True) # 예약자 이름
