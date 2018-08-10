@@ -22,4 +22,5 @@ class RoomReservationSerializer(RoomBaseSerializer):
 			'extra_charge_adult',
 			'extra_charge_child',
 			'extra_charge_baby',
+			'status',
 		)
