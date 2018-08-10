@@ -9,7 +9,6 @@ __all__ = (
     'Room',
     'PensionImage',
     'RoomImage',
-    'Comment',
     'PensionLike',
 )
 
@@ -17,12 +16,17 @@ __all__ = (
 class Location(models.Model):
     name = models.TextField(blank=True) # 지역이름
     location_no = models.TextField(blank=True)# 지역 번호
+    pensions_length = models.IntegerField(default=0, blank=True)
+
+    def __str__(self):
+        return self.name
 
 
 class SubLocation(models.Model):
     location = models.ForeignKey(Location,related_name='sublocations',on_delete=models.CASCADE)
     name = models.TextField(blank=True) # 세부지역이름
     sub_location_no = models.TextField(blank=True)# 세부지역 번호
+    pensions_length = models.IntegerField(default=0, blank=True)
 
 # pension image는 1장이라서 바로 pension모델의 속성으로 저장하고
 # room에 속하는 image들은 따로 roomimage테이블 만들어서 foreingkey로 room과 연결함. many가 roomimage, one이 room
@@ -53,6 +57,9 @@ class Pension(models.Model):
     precautions = models.TextField(blank=True)# 이용 주의사항
 
 
+    def __str__(self):
+        return self.name
+
 
 
     # 팬션, 방 이미지 어떻게 관리하는지?
@@ -62,7 +69,6 @@ class Pension(models.Model):
 
 class Room(models.Model):
     pension = models.ForeignKey(Pension, related_name='rooms', on_delete=models.CASCADE)
-
     name = models.TextField(blank=True) # '객실 명'
     structure = models.TextField(blank=True) # '객실구조'
     equipments = models.TextField(blank=True) # '구비시설'
@@ -71,6 +77,8 @@ class Room(models.Model):
     normal_num_poeple = models.IntegerField(default=0,blank=True) # '기준인원'
     max_num_people = models.IntegerField(default=0,blank=True) # '최대인원'
     price = models.IntegerField(default=0,blank=True) # '가격'
+    status = models.BooleanField(default=False)
+
 
     # 추가요금안내
     # '인원추가 불가능' 시에는 여기 그대로 넣고 if문으로 아예 아래는 값 대입하지 말자.
@@ -78,6 +86,9 @@ class Room(models.Model):
     extra_charge_adult = models.IntegerField(default=0,blank=True)
     extra_charge_child = models.IntegerField(default=0,blank=True)
     extra_charge_baby = models.IntegerField(default=0,blank=True)
+
+    def __str__(self):
+        return self.name
 
 
 class PensionImage(models.Model):
@@ -89,21 +100,6 @@ class RoomImage(models.Model):
     room= models.ForeignKey(Room,related_name='roomimages',on_delete=models.CASCADE,)
     room_image = models.ImageField(upload_to='room', blank=True, max_length=1000) # '방 이미지'
 
-
-
-class Comment(models.Model):
-    pension = models.ForeignKey(
-        Pension,
-        on_delete=models.CASCADE,
-        null=True,
-    )
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-    )
-
-    content = models.CharField(max_length=300, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
 
 class PensionLike(models.Model):
