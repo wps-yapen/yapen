@@ -17,7 +17,8 @@ class SubLocationSerializer(serializers.ModelSerializer):
         fields =(
             'name',
             'sub_location_no',
-            'pensions'
+            'pensions',
+            'pensions_length'
         )
 
 
@@ -28,5 +29,6 @@ class LocationSerializer(serializers.ModelSerializer):
         fields =(
             'name',
             'sublocations',
+            'pensions_length',
         )
 
