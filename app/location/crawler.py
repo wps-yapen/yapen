@@ -188,14 +188,23 @@ def pension_detail_crawler(sub_location,lowest_price,pension_image_thumbnail,ypi
     result = re.findall('지번 : (.*) ',address)
     lat=0
     lng=0
+    tic = 0
     while(lat==0):     # 한번 요청 보내도 값 안줄때가 있어서 적절한 값 들어갈때까지 요청 보낸다.
         URL = 'http://maps.googleapis.com/maps/api/geocode/json?sensor=false&language=ko&address={}' \
             .format(result)
+
         response = requests.get(URL)
-        data = response.json()
-        if data.get('results'):  # 만약 reaults에 뭔가 있다면 if문들어가서 lat, lng에 값 할당
-            lat = data['results'][0]['geometry']['location']['lat']                                 # 위도 lat
-            lng = data['results'][0]['geometry']['location']['lng']                                 # 경도 lng
+
+        if response:
+            data = response.json()
+
+            if data.get('results'):  # 만약 reaults에 뭔가 있다면 if문들어가서 lat, lng에 값 할당
+                lat = data['results'][0]['geometry']['location']['lat']                                 # 위도 lat
+                lng = data['results'][0]['geometry']['location']['lng']                                 # 경도 lng
+
+        tic = tic +1
+        if tic ==10:
+            lat = 1
 
     # check_in, check_out
     tds2 = trs[1].select('td')
