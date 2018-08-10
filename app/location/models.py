@@ -71,6 +71,7 @@ class Room(models.Model):
     normal_num_poeple = models.IntegerField(default=0,blank=True) # '기준인원'
     max_num_people = models.IntegerField(default=0,blank=True) # '최대인원'
     price = models.IntegerField(default=0,blank=True) # '가격'
+    status = models.BooleanField(default=False)
 
     # 추가요금안내
     # '인원추가 불가능' 시에는 여기 그대로 넣고 if문으로 아예 아래는 값 대입하지 말자.
