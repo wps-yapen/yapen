@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 from location.models import Room
 from location.serializer import pension
 from reservation.models import Reservation
-from reservation.serializer.payment import ReservationPaySerializer
+# from reservation.serializer.payment import ReservationPaySerializer
 from reservation.serializer.reservation import RoomReservationSerializer
 
 
@@ -26,15 +26,29 @@ class ReservationRoom(APIView):
 			if reservation.room.pension.pk == pk:
 				reservated_room_pk_list.append(reservation.room.pk)
 		rooms = Room.objects.filter(pension=pk).exclude(pk__in=reservated_room_pk_list)
-		serializer = RoomReservationSerializer(rooms, many=True)
+		room_all = Room.objects.filter(pension=pk)
+
+
+		for room in room_all:
+			room.status=False
+			room.save()
+
+
+		for room in rooms:
+
+			room.status = True
+			room.save()
+
+		rooms_all = Room.objects.filter(pension=pk)
+		serializer = RoomReservationSerializer(rooms_all, many=True)
 		return Response(serializer.data)
 
 
-class ReservationPay(APIView):
-
-	def post(self, request, pk, date, format=None):
-		serializer = ReservationPaySerializer(data=request.data)
-		if serializer.is_valid():
-			serializer.save()
-			return Response(serializer.validated_data, status=status.HTTP_200_OK)
-		return Response(status=status.HTTP_400_BAD_REQUEST)
+# class ReservationPay(APIView):
+#
+# 	def post(self, request, pk, date, format=None):
+# 		serializer = ReservationPaySerializer(data=request.data)
+# 		if serializer.is_valid():
+# 			serializer.save()
+# 			return Response(serializer.validated_data, status=status.HTTP_200_OK)
+# 		return Response(status=status.HTTP_400_BAD_REQUEST)
