@@ -77,6 +77,7 @@ class Room(models.Model):
     normal_num_poeple = models.IntegerField(default=0,blank=True) # '기준인원'
     max_num_people = models.IntegerField(default=0,blank=True) # '최대인원'
     price = models.IntegerField(default=0,blank=True) # '가격'
+    status = models.BooleanField(default=False)
 
 
     # 추가요금안내
