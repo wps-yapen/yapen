@@ -16,6 +16,8 @@ class ReservationPaySerializer(ReservationSerializer):
 			'checkout_date',
 			'reservation_price',
 		)
+
+
 	def create(self,validated_data):
 		list1 = validated_data['checkin_date'].split('-')
 		year = int(list1[0])
