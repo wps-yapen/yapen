@@ -66,7 +66,9 @@ class Migration(migrations.Migration):
                 ('subscriber', models.CharField(blank=True, max_length=100)),
                 ('phone_number', models.CharField(blank=True, max_length=100)),
                 ('birth_date', models.CharField(blank=True, max_length=100)),
+
                 ('pickup_or_not', models.BooleanField(blank=True, default=True)),
+
                 ('entering_time', models.CharField(blank=True, max_length=100)),
                 ('requested_term', models.TextField(blank=True)),
                 ('deposit_bank', models.CharField(blank=True, max_length=100)),
