@@ -9,7 +9,6 @@ __all__ = (
     'Room',
     'PensionImage',
     'RoomImage',
-    'Comment',
     'PensionLike',
 )
 
@@ -17,6 +16,9 @@ __all__ = (
 class Location(models.Model):
     name = models.TextField(blank=True) # 지역이름
     location_no = models.TextField(blank=True)# 지역 번호
+
+    def __str__(self):
+        return self.name
 
 
 class SubLocation(models.Model):
@@ -53,6 +55,9 @@ class Pension(models.Model):
     precautions = models.TextField(blank=True)# 이용 주의사항
 
 
+    def __str__(self):
+        return self.name
+
 
 
     # 팬션, 방 이미지 어떻게 관리하는지?
@@ -80,6 +85,9 @@ class Room(models.Model):
     extra_charge_child = models.IntegerField(default=0,blank=True)
     extra_charge_baby = models.IntegerField(default=0,blank=True)
 
+    def __str__(self):
+        return self.name
+
 
 class PensionImage(models.Model):
     pension = models.ForeignKey(Pension,related_name='pensionimages', on_delete=models.CASCADE,)
@@ -90,21 +98,6 @@ class RoomImage(models.Model):
     room= models.ForeignKey(Room,related_name='roomimages',on_delete=models.CASCADE,)
     room_image = models.ImageField(upload_to='room', blank=True, max_length=1000) # '방 이미지'
 
-
-
-class Comment(models.Model):
-    pension = models.ForeignKey(
-        Pension,
-        on_delete=models.CASCADE,
-        null=True,
-    )
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-    )
-
-    content = models.CharField(max_length=300, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
 
 class PensionLike(models.Model):
