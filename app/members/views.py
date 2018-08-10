@@ -26,8 +26,10 @@ class SignUp(APIView):
             return Response(serializer.validated_data, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
+
 class UserActivate(APIView):
     permission_classes = (permissions.AllowAny,)
+
     def get(self, request, uidb64, token):
         try:
             uid = force_text(urlsafe_base64_decode(uidb64.encode('utf-8')))
@@ -47,6 +49,7 @@ class UserActivate(APIView):
         except Exception as e:
             print(traceback.format.exc())
 
+#login
 class AuthToken(APIView):
     def post(self, request):
         username = request.data.get('username')
@@ -71,6 +74,7 @@ class UserDetailView(APIView):
     def get(self, request):
         serializer = UserDetailSerializer(request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 
 class UserChangePassword(APIView):
