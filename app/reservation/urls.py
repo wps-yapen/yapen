@@ -1,13 +1,13 @@
 from django.urls import path
 
 
-from reservation.views import ReservationRoom, ReservationPay
+from reservation.views import ReservationRoom
 
 urlpatterns = [
     path('<int:pk>/<str:date>/',
          ReservationRoom.as_view(),
          name='Reservation'),
-    path('<int:pk>/<str:date>/info/',
-         ReservationPay.as_view(),
-         name='ReservationPay'),
+    # path('<int:pk>/<str:date>/info/',
+    #      ReservationPay.as_view(),
+    #      name='ReservationPay'),
 ]
