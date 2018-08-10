@@ -32,7 +32,7 @@ def room_crawler(soup,room_num,url,pension,count_sec_after_popup,count_sec_after
 
     # 접속.
 
-    chromedriver_dir = '/Users/apple/Downloads/chromedriver'
+    chromedriver_dir = '/Users/jeonsangmin/project/chromedriver'
 
     driver = webdriver.Chrome(chromedriver_dir)
     driver.get(url)
@@ -159,7 +159,7 @@ def room_crawler(soup,room_num,url,pension,count_sec_after_popup,count_sec_after
 
 
 def pension_detail_crawler(sub_location,lowest_price,pension_image_thumbnail,ypidx,discount_rate):
-    max_room_num = 4
+    max_room_num = 1
     pension_picture_url_num = 2  # 저장할 pension 이미지 url 1이상으로 설정해야함.
     room_picture_url_num = 2  # 저장할 room 이미지 url 1이상으로 설정해야함.
     count_sec_after_popup = 3  # seleinuim으로 창 연후에 후 몇초 sleep할지
@@ -394,7 +394,7 @@ def location_crawler():
 
     left_menu = soup.select('div.locLayer')
     # 풀빌라, MD추천 제외 14지역중 7지역 만남김.
-    selected_left_menu = left_menu[2:4]
+    selected_left_menu = left_menu[2:3]
 
     for selected_location in selected_left_menu:
         # 지역 이름 먼저 뽑음
@@ -433,3 +433,15 @@ def location_crawler():
                    ypidx=sub_locations_info_list[3][i],  # ypidx,
                    discount_rate=sub_locations_info_list[4][i]   # discount_rate,
                )
+        for location in Location.objects.all():
+            location.pensions_length = len(Pension.objects.filter(location=location))
+
+    for location in Location.objects.all():
+        sub_location = SubLocation.objects.filter(location=location)
+        location.pensions_length = len(Pension.objects.filter(sub_location__in=sub_location))
+        location.save()
+
+    for sublocation in SubLocation.objects.all():
+        sublocation.pensions_length = len(Pension.objects.filter(sub_location=sublocation))
+        sublocation.save()
+
