@@ -9,7 +9,6 @@ __all__ = (
     'Room',
     'PensionImage',
     'RoomImage',
-    'Comment',
     'PensionLike',
 )
 
@@ -17,6 +16,9 @@ __all__ = (
 class Location(models.Model):
     name = models.TextField(blank=True) # 지역이름
     location_no = models.TextField(blank=True)# 지역 번호
+
+    def __str__(self):
+        return self.name
 
 
 class SubLocation(models.Model):
@@ -53,6 +55,9 @@ class Pension(models.Model):
     precautions = models.TextField(blank=True)# 이용 주의사항
 
 
+    def __str__(self):
+        return self.name
+
 
 
     # 팬션, 방 이미지 어떻게 관리하는지?
@@ -79,6 +84,9 @@ class Room(models.Model):
     extra_charge_child = models.IntegerField(default=0,blank=True)
     extra_charge_baby = models.IntegerField(default=0,blank=True)
 
+    def __str__(self):
+        return self.name
+
 
 class PensionImage(models.Model):
     pension = models.ForeignKey(Pension,related_name='pensionimages', on_delete=models.CASCADE,)
@@ -89,39 +97,6 @@ class RoomImage(models.Model):
     room= models.ForeignKey(Room,related_name='roomimages',on_delete=models.CASCADE,)
     room_image = models.ImageField(upload_to='room', blank=True, max_length=1000) # '방 이미지'
 
-
-# 반대쪽 입장에서 이것이 뭔지 생각해서 related_name 정한다.
-class Reservation(models.Model):
-    room = models.ForeignKey(Room,related_name='reservations', on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    date = models.DateTimeField(auto_now=False, auto_now_add=False,blank=True)
-
-    # 예약페이지 상세정보
-    subscriber = models.CharField( max_length=100,blank=True) # 예약자 이름
-    phone_number = models.CharField( max_length=100,blank=True) # 휴대폰 번호
-    birth_date = models.CharField( max_length=100,blank=True) # 생년월일19920803
-    pickup_or_not = models.BooleanField(default=True, blank=True) #픽업여부
-    entering_time = models.CharField( max_length=100,blank=True) # 입실예정시간
-    requested_term = models.TextField(blank=True) # 요청사항
-
-    # 결제방법 - > 무통장 입금 관련 정보
-    deposit_bank = models.CharField( max_length=100,blank=True) # 입금은행
-    depositor_name = models.CharField( max_length=100,blank=True) # 입금자명
-
-
-class Comment(models.Model):
-    pension = models.ForeignKey(
-        Pension,
-        on_delete=models.CASCADE,
-        null=True,
-    )
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-    )
-
-    content = models.CharField(max_length=300, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
 
 class PensionLike(models.Model):
