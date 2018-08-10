@@ -33,7 +33,7 @@ def room_crawler(soup,room_num,url,pension,count_sec_after_popup,count_sec_after
     # 접속.
 
 
-    chromedriver_dir = '/Users/jeonsangmin/project/chromedriver'
+    chromedriver_dir = '/home/nasanmaro/Desktop/projects/yapen/test/selenium_crawling_test/chromedriver'
 
     driver = webdriver.Chrome(chromedriver_dir)
     driver.get(url)
@@ -404,7 +404,7 @@ def location_crawler():
 
     left_menu = soup.select('div.locLayer')
     # 풀빌라, MD추천 제외 14지역중 7지역 만남김.
-    selected_left_menu = left_menu[2:3]
+    selected_left_menu = left_menu[2:4]
 
     for selected_location in selected_left_menu:
         # 지역 이름 먼저 뽑음
@@ -443,8 +443,6 @@ def location_crawler():
                    ypidx=sub_locations_info_list[3][i],  # ypidx,
                    discount_rate=sub_locations_info_list[4][i]   # discount_rate,
                )
-        for location in Location.objects.all():
-            location.pensions_length = len(Pension.objects.filter(location=location))
 
     for location in Location.objects.all():
         sub_location = SubLocation.objects.filter(location=location)
