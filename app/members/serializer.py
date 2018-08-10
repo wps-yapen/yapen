@@ -17,6 +17,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
     username = serializers.CharField(max_length=100)
     email = serializers.EmailField()
 
+
     class Meta:
         model = User
         fields = '__all__'
@@ -36,7 +37,6 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
 
     def validate_password(self, value):
-
         if len(value) < 8:
             raise serializers.ValidationError('패스워드는 최소 8자 이상이어야 합니다.')
         return value
@@ -112,7 +112,6 @@ class UserPasswordChange(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         instance.set_password(validated_data['password'])
-        print('1',validated_data)
         instance.save()
 
         return instance
