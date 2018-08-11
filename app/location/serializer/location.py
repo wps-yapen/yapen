@@ -8,17 +8,15 @@ __all__ = (
     'LocationSerializer',
 )
 
-
+# 검색창에서 쓰이는 Locaiton, SubLocation 의 name, location_no, pension수 보이기 위한 serailzier
 class SubLocationSerializer(serializers.ModelSerializer):
-    pensions = PensionListSerializer(many=True, read_only=True)
-
     class Meta:
         model = SubLocation
         fields =(
             'name',
+            'pensions_length',
             'sub_location_no',
-            'pensions',
-            'pensions_length'
+
         )
 
 
@@ -28,7 +26,8 @@ class LocationSerializer(serializers.ModelSerializer):
         model = Location
         fields =(
             'name',
-            'sublocations',
             'pensions_length',
+            'sublocations',
+
         )
 
