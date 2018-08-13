@@ -17,6 +17,15 @@ import json
 
 
 
+def convert_to_datetime(date):
+    list1 = date.split('-')
+    year = int(list1[0])
+    month = int(list1[1])
+    day = int(list1[2])
+    target_date = datetime.date(year, month, day)
+    return target_date
+
+
     # 요청에 넣을것. x
     # http://localhost:8000/reservation/2/2018-08-08/ 주소에  팬션pk, date 받아서 씀
 
@@ -28,11 +37,7 @@ class ReservationRoom(APIView):
         month = int(list)
 
     def get(self,request,pk, date, format=None):
-        list1 = date.split('-')
-        year = int(list1[0])
-        month = int(list1[1])
-        day = int(list1[2])
-        target_date = datetime.date(year, month, day)
+        target_date = convert_to_datetime(date)
         reservated_list = Reservation.objects.filter(checkin_date__lte=target_date, checkout_date__gte=target_date)
         reservated_room_pk_list = []
         for reservation in reservated_list:
@@ -98,6 +103,11 @@ class ReservationInfo(APIView):
 
     def post(self, request, format=None):
 
+        # 묵으려는 박수가 다른 reservatino 과 겹치면?
+
+
+
+
         # 먼저 전달받은 pk로 해당 방 객체를 얻는다. 없으면 404 애러 띄움.
         rooom_pk = request.data.get('pk')
 
@@ -137,6 +147,70 @@ class ReservationInfo(APIView):
 
 
 
+    # 요청에 넣을것.----------->Reservation 객체 만들때 필요한 모든것.
+
+    # {
+    #     "pk": "1",
+    #     "checkin_date": "2018-08-13",
+    #     "stay_day_num": "4",
+    #     "total_price": "4000000",
+    #     "subscriber": "maro's_friends",
+    #     "phone_number": "010-6651-1550",
+    #     "method_of_payment": "무통장입금",
+    #     "deposit_bank": "우리은행",
+    #     "depositor_name": "나산마로",
+    #     "card_number": "5342-9200-0247-2223",
+    #
+    #     "expiration_month": "01",
+    #     "expiration_year": "30",
+    #     "card_password": "29",
+    #     "card_type": "개인",
+    #     "birth_date_of_owner": "19920803",
+    #     "installment_plan": "2개월",
+    #     "email": "nadcdc4@gmail.com"
+    # }
+
+
+class ReservationPay(APIView):
+
+    # room 객체 얻는 함수 없으면 404에러
+    def get_room_object(self, pk):
+        try:
+            return Room.objects.get(pk=pk)
+        except Room.DoesNotExist:
+            raise Http404
+
+
+    def post(self,request, format=None):
+
+        reservation = Reservation.objects.create(
+            room=self.get_room_object(pk=request.data.get('pk')),
+            user=request.user,
+            checkin_date=convert_to_datetime(request.data.get('checkin_date')),
+            checkout_date=convert_to_datetime(request.data.get('checkin_date')) +
+                          datetime.timedelta(int(request.data.get('stay_day_num'))- 1),
+            total_price=int(request.data.get("total_price")),
+            subscriber=request.data.get("subscriber"),
+            phone_number=request.data.get("phone_number"),
+            method_of_payment=request.data.get("method_of_payment"),
+        )
+        # 지불 방법에 따라 다르게 업데이트해야한다.
+        if request.data.get("method_of_payment") == "무통장입금":
+            reservation.deposit_bank = request.data.get("deposit_bank")
+            reservation.depositor_name = request.data.get("depositor_name")
+
+        elif request.data.get("method_of_payment") == "카드간편결제":
+            reservation.card_number = request.data.get("card_number")
+            reservation.expiration_month = request.data.get("expiration_month")
+            reservation.expiration_year = request.data.get("expiration_year")
+            reservation.card_password = request.data.get("card_password")
+            reservation.card_type = request.data.get("card_type")
+            reservation.birth_date_of_owner = request.data.get("birth_date_of_owner")
+            reservation.installment_plan = request.data.get("installment_plan")
+            reservation.email = request.data.get("email")
+        reservation.save()
+
+        return Response(request.data)
 
 
 
