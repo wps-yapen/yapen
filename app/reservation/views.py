@@ -1,9 +1,11 @@
 import datetime
 import re
 
+import django
 from django.db.models import Q
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from rest_framework import status
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -56,7 +58,7 @@ class ReservationRoom(APIView):
 
         rooms_all = Room.objects.filter(pension=pk)
         serializer = RoomReservationSerializer(rooms_all, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data,status=status.HTTP_200_OK)
 
     # 결과
     # {
@@ -99,20 +101,26 @@ class ReservationInfo(APIView):
         except Room.DoesNotExist:
             raise Http404
 
-
-
     def post(self, request, format=None):
-
-        # 묵으려는 박수가 다른 reservatino 과 겹치면?
-
-
-
-
         # 먼저 전달받은 pk로 해당 방 객체를 얻는다. 없으면 404 애러 띄움.
         rooom_pk = request.data.get('pk')
+        room = self.get_room_object(pk=rooom_pk)
+
+
+        # 묵으려는 박수가 다른 reservatino 과 겹치면?
+        # 즉 checkoutdate가 다른 reservation 의 날짜 range안에 들어있다면?
+        checkin_date = convert_to_datetime(request.data.get('checkin_date'))
+        checkout_date =  checkin_date + \
+                      datetime.timedelta(int(request.data.get('stay_day_num'))- 1)
+        reservation = room.reservations.filter(Q(checkout_date__lte=checkout_date, checkout_date__gte=checkin_date)|
+        Q(checkin_date__lte=checkout_date, checkin_date__gte=checkin_date))
+
+        # 만약 그런 reservatoin이 있다면 에러를 400에러를 raise한다.
+        if reservation:
+            raise ValidationError
+
 
         # room 관련 정보는 roombaseserializer로 뽑아오겠슴.
-        room = self.get_room_object(pk=rooom_pk)
         serializer = RoomBaseSerializer(room)
 
         # 최종적으로 전달할 정보들 담은 dit
@@ -121,7 +129,7 @@ class ReservationInfo(APIView):
         # 여기에 request로 받은 정보들을 update
         new_serializer_data.update(request.data)
 
-        return Response(new_serializer_data)
+        return Response(new_serializer_data,status=status.HTTP_200_OK)
 
 
         # 결과
@@ -141,8 +149,11 @@ class ReservationInfo(APIView):
         #     "total_price": "4000000"
         # }
 
-
-
+        #
+        # # 해당되는 방에 있는 Reservation 객체들언 먼저 다 가져온다.
+        # reservations_of_this_room = Reservation.objects.filter(room=request.data.get("pk"),
+        #                                                        checkin_date__lte=target_date,
+        #                                                        checkout_date__gte=target_date)
 
 
 
@@ -183,34 +194,38 @@ class ReservationPay(APIView):
 
     def post(self,request, format=None):
 
-        reservation = Reservation.objects.create(
-            room=self.get_room_object(pk=request.data.get('pk')),
-            user=request.user,
-            checkin_date=convert_to_datetime(request.data.get('checkin_date')),
-            checkout_date=convert_to_datetime(request.data.get('checkin_date')) +
-                          datetime.timedelta(int(request.data.get('stay_day_num'))- 1),
-            total_price=int(request.data.get("total_price")),
-            subscriber=request.data.get("subscriber"),
-            phone_number=request.data.get("phone_number"),
-            method_of_payment=request.data.get("method_of_payment"),
-        )
-        # 지불 방법에 따라 다르게 업데이트해야한다.
-        if request.data.get("method_of_payment") == "무통장입금":
-            reservation.deposit_bank = request.data.get("deposit_bank")
-            reservation.depositor_name = request.data.get("depositor_name")
+        # 로그인이 안되있으면 (받은 요청의 헤더에 토큰이 없으면) 에러 발생
+        if type(request.user) == django.contrib.auth.models.AnonymousUser:
+            return HttpResponse('Unauthorized', status=401)
+        #
+        #
+        # reservation = Reservation.objects.create(
+        #     room=self.get_room_object(pk=request.data.get('pk')),
+        #     user=request.user,
+        #     checkin_date=convert_to_datetime(request.data.get('checkin_date')),
+        #     checkout_date=convert_to_datetime(request.data.get('checkin_date')) +
+        #                   datetime.timedelta(int(request.data.get('stay_day_num'))- 1),
+        #     total_price=int(request.data.get("total_price")),
+        #     subscriber=request.data.get("subscriber"),
+        #     phone_number=request.data.get("phone_number"),
+        #     method_of_payment=request.data.get("method_of_payment"),
+        # )
+        # # 지불 방법에 따라 다르게 업데이트해야한다.
+        # if request.data.get("method_of_payment") == "무통장입금":
+        #     reservation.deposit_bank = request.data.get("deposit_bank")
+        #     reservation.depositor_name = request.data.get("depositor_name")
+        #
+        # elif request.data.get("method_of_payment") == "카드간편결제":
+        #     reservation.card_number = request.data.get("card_number")
+        #     reservation.expiration_month = request.data.get("expiration_month")
+        #     reservation.expiration_year = request.data.get("expiration_year")
+        #     reservation.card_password = request.data.get("card_password")
+        #     reservation.card_type = request.data.get("card_type")
+        #     reservation.birth_date_of_owner = request.data.get("birth_date_of_owner")
+        #     reservation.installment_plan = request.data.get("installment_plan")
+        #     reservation.email = request.data.get("email")
+        # reservation.save()
 
-        elif request.data.get("method_of_payment") == "카드간편결제":
-            reservation.card_number = request.data.get("card_number")
-            reservation.expiration_month = request.data.get("expiration_month")
-            reservation.expiration_year = request.data.get("expiration_year")
-            reservation.card_password = request.data.get("card_password")
-            reservation.card_type = request.data.get("card_type")
-            reservation.birth_date_of_owner = request.data.get("birth_date_of_owner")
-            reservation.installment_plan = request.data.get("installment_plan")
-            reservation.email = request.data.get("email")
-        reservation.save()
-
-        return Response(request.data)
-
+        return Response(request.data,status=status.HTTP_200_OK)
 
 
