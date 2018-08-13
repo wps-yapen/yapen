@@ -93,12 +93,12 @@ class Room(models.Model):
 
 class PensionImage(models.Model):
     pension = models.ForeignKey(Pension,related_name='pensionimages', on_delete=models.CASCADE,)
-    pension_image = models.ImageField(upload_to='pension', blank=True, max_length=1000) # '팬션 이미지'
+    pension_image = models.URLField() # '팬션 이미지'
 
 
 class RoomImage(models.Model):
     room= models.ForeignKey(Room,related_name='roomimages',on_delete=models.CASCADE,)
-    room_image = models.ImageField(upload_to='room', blank=True, max_length=1000) # '방 이미지'
+    room_image = models.URLField() # '방 이미지'
 
 
 
