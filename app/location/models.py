@@ -34,7 +34,7 @@ class Pension(models.Model):
     sub_location = models.ForeignKey(SubLocation, related_name='pensions',on_delete=models.CASCADE)
     # 세부지역 메이페이지에서 크롤링할때 체우는 속성
     name = models.TextField(blank=True) # '팬션이름'
-    pension_image_thumbnail = models.ImageField(upload_to='pension', blank=True) # '팬션 이미지' # 해커톤때 photo # MEDIA_ROOT의세부경로가 upload_to에 들어감.
+    pension_image_thumbnail = models.URLField() # '팬션 이미지' # 해커톤때 photo # MEDIA_ROOT의세부경로가 upload_to에 들어감.
     lowest_price = models.IntegerField(default=0, blank=True) # '최저가'  # 해커톤때 price
     ypidx = models.IntegerField(default=0, blank=True) # '팬션별 고유번호'
     discount_rate = models.IntegerField(default=0,blank=True)# 할인률
