@@ -19,6 +19,3 @@ class Reservation(models.Model):
   entering_time = models.CharField( max_length=100,blank=True) # 입실예정시간
   requested_term = models.TextField(blank=True) # 요청사항
 
-  # 결제방법 - > 무통장 입금 관련 정보
-  deposit_bank = models.CharField( max_length=100,blank=True) # 입금은행
-  depositor_name = models.CharField( max_length=100,blank=True) # 입금자명
