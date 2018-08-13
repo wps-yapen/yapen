@@ -43,6 +43,7 @@ from reservation.serializer.reservation import ReservationSerializer
 # 		return validated_data
 
 
+# 기존 reservation serializer 상속 안받고 만들어봄.
 class ReservationPaySerializer(serializers.ModelSerializer):
 
 	class Meta:
@@ -52,12 +53,10 @@ class ReservationPaySerializer(serializers.ModelSerializer):
 			'checkout_date',
 			'room',
 			'user',
-			'checkin_date',
-			'checkout_date',
 			'reservation_price',
 		)
 
-	def create(self,validated_data):
+	def create(self, validated_data):
 		list1 = validated_data['checkin_date'].split('-')
 		year = int(list1[0])
 		month = int(list1[1])
@@ -70,22 +69,24 @@ class ReservationPaySerializer(serializers.ModelSerializer):
 		day = int(list2[2])
 		target_date2 = datetime.date(year, month, day)
 
-		print(year)
-		print(month)
-		print(day)
 		print(target_date1)
 		print(target_date2)
 
-
 		reservation = Reservation.objects.create(
-			room = Room.objects.get(pk=int(validated_data['room'])),
-			user = User.objects.get(pk=int(validated_data['user'])),
-			checkin_date = target_date1,
-			checkout_date = target_date2,
-			reservation_price = int(validated_data['reservation_price'])
+			room=Room.objects.get(pk=int(validated_data['room'])),
+			user=User.objects.get(pk=int(validated_data['user'])),
+			checkin_date=target_date1,
+			checkout_date=target_date2,
+			reservation_price=int(validated_data['reservation_price'])
 		)
 		reservation.save()
 		return validated_data
+
+
+
+
+
+
 
 # import datetime
 #
@@ -124,3 +125,50 @@ class ReservationPaySerializer(serializers.ModelSerializer):
 # 			reservation_price = int(validated_data['reservation_price'])
 # 		)
 # 		return validated_data
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
