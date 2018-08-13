@@ -197,34 +197,34 @@ class ReservationPay(APIView):
         # 로그인이 안되있으면 (받은 요청의 헤더에 토큰이 없으면) 에러 발생
         if type(request.user) == django.contrib.auth.models.AnonymousUser:
             return HttpResponse('Unauthorized', status=401)
-        #
-        #
-        # reservation = Reservation.objects.create(
-        #     room=self.get_room_object(pk=request.data.get('pk')),
-        #     user=request.user,
-        #     checkin_date=convert_to_datetime(request.data.get('checkin_date')),
-        #     checkout_date=convert_to_datetime(request.data.get('checkin_date')) +
-        #                   datetime.timedelta(int(request.data.get('stay_day_num'))- 1),
-        #     total_price=int(request.data.get("total_price")),
-        #     subscriber=request.data.get("subscriber"),
-        #     phone_number=request.data.get("phone_number"),
-        #     method_of_payment=request.data.get("method_of_payment"),
-        # )
-        # # 지불 방법에 따라 다르게 업데이트해야한다.
-        # if request.data.get("method_of_payment") == "무통장입금":
-        #     reservation.deposit_bank = request.data.get("deposit_bank")
-        #     reservation.depositor_name = request.data.get("depositor_name")
-        #
-        # elif request.data.get("method_of_payment") == "카드간편결제":
-        #     reservation.card_number = request.data.get("card_number")
-        #     reservation.expiration_month = request.data.get("expiration_month")
-        #     reservation.expiration_year = request.data.get("expiration_year")
-        #     reservation.card_password = request.data.get("card_password")
-        #     reservation.card_type = request.data.get("card_type")
-        #     reservation.birth_date_of_owner = request.data.get("birth_date_of_owner")
-        #     reservation.installment_plan = request.data.get("installment_plan")
-        #     reservation.email = request.data.get("email")
-        # reservation.save()
+
+
+        reservation = Reservation.objects.create(
+            room=self.get_room_object(pk=request.data.get('pk')),
+            user=request.user,
+            checkin_date=convert_to_datetime(request.data.get('checkin_date')),
+            checkout_date=convert_to_datetime(request.data.get('checkin_date')) +
+                          datetime.timedelta(int(request.data.get('stay_day_num'))- 1),
+            total_price=int(request.data.get("total_price")),
+            subscriber=request.data.get("subscriber"),
+            phone_number=request.data.get("phone_number"),
+            method_of_payment=request.data.get("method_of_payment"),
+        )
+        # 지불 방법에 따라 다르게 업데이트해야한다.
+        if request.data.get("method_of_payment") == "무통장입금":
+            reservation.deposit_bank = request.data.get("deposit_bank")
+            reservation.depositor_name = request.data.get("depositor_name")
+
+        elif request.data.get("method_of_payment") == "카드간편결제":
+            reservation.card_number = request.data.get("card_number")
+            reservation.expiration_month = request.data.get("expiration_month")
+            reservation.expiration_year = request.data.get("expiration_year")
+            reservation.card_password = request.data.get("card_password")
+            reservation.card_type = request.data.get("card_type")
+            reservation.birth_date_of_owner = request.data.get("birth_date_of_owner")
+            reservation.installment_plan = request.data.get("installment_plan")
+            reservation.email = request.data.get("email")
+        reservation.save()
 
         return Response(request.data,status=status.HTTP_200_OK)
 
