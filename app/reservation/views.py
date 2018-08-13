@@ -117,7 +117,7 @@ class ReservationInfo(APIView):
 
         # 만약 그런 reservatoin이 있다면 에러를 400에러를 raise한다.
         if reservation:
-            raise ValidationError
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
         # room 관련 정보는 roombaseserializer로 뽑아오겠슴.
@@ -196,7 +196,7 @@ class ReservationPay(APIView):
 
         # 로그인이 안되있으면 (받은 요청의 헤더에 토큰이 없으면) 에러 발생
         if type(request.user) == django.contrib.auth.models.AnonymousUser:
-            return HttpResponse('Unauthorized', status=401)
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
         reservation = Reservation.objects.create(
