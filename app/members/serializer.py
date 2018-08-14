@@ -7,7 +7,9 @@ from django.utils.http import urlsafe_base64_encode
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
+from reservation.models import Reservation
 from .token import account_activation_token
+from reservation.serializer.reservation import ReservationSerializer
 
 
 User = get_user_model()
@@ -55,7 +57,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
         message = render_to_string('user/account_activate_email.html', {
             'user' : user,
-            'domain' : 'localhost:8000',
+            'domain' : 'pmb.kr',
             'uid' : urlsafe_base64_encode(force_bytes(user.pk)).decode('utf-8'),
             'token' : account_activation_token.make_token(user)
         })
@@ -68,13 +70,26 @@ class UserCreateSerializer(serializers.ModelSerializer):
         return validated_data
 
 
-class UserDetailSerializer(serializers.ModelSerializer):
+class UserReservationSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
-        fields = [
-            'username',
-            'email',
+        model = Reservation
+        field = [
+            'room',
+            'user',
+            'checkin_date',
+            'checkout_date',
+            'total_price',
+            'subscriber',
+            'phone_number',
         ]
+
+
+class UserDetailSerializer(ReservationSerializer):
+    reservations = UserReservationSerializer(many=True, read_only=True)
+    class Meta(ReservationSerializer.Meta):
+        model = User
+        fields = ['usernam',] + \
+                 ReservationSerializer.Meta.fields
 
 
 class UserPasswordChange(serializers.ModelSerializer):

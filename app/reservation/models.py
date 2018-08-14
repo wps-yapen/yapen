@@ -3,10 +3,9 @@ from django.db import models
 
 from location.models import Room
 
-
 class Reservation(models.Model):
   room = models.ForeignKey(Room,related_name='reservations', on_delete=models.CASCADE)
-  user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+  user = models.ForeignKey(settings.AUTH_USER_MODEL,related_name='reservations', on_delete=models.CASCADE)
   checkin_date = models.DateField(auto_now=False, auto_now_add=False, blank=True)
   checkout_date = models.DateField(auto_now=False, auto_now_add=False, blank=True)
   total_price = models.IntegerField(default=0, blank=True)
