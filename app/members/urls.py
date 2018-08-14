@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import SignUp, UserActivate, UserDetailView, AuthToken, UserChangePassword, Deletetoken
+from .apis import SignUp, UserActivate, UserDetailView, AuthToken, UserChangePassword, Deletetoken
 
 app_name = 'members'
 
