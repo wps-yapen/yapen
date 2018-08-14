@@ -1,12 +1,13 @@
 from rest_framework import serializers
 
-from .room import RoomSerializer
+from location.serializer.room import RoomSerializer
 from ..models import Pension,PensionImage
 
 __all__ = (
     'PensionListSerializer',
     'PensionDetailSerializer',
     'PensionImageSerializer',
+    'PensionNameSerializer',
 
 )
 
@@ -15,7 +16,6 @@ class PensionImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = PensionImage
         fields = (
-            # 'pension',
             'pension_image',
         )
 
@@ -61,4 +61,10 @@ class PensionDetailSerializer(PensionBaseSerializer):
             'rooms',
         )
 
-
+class PensionNameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Pension
+        fields = (
+            'pk',
+            'name',
+        )

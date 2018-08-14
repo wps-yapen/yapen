@@ -9,6 +9,7 @@ class ReservationSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Reservation
 		fields = (
+			'pk',
 			'checkin_date',
 			'checkout_date',
 		)
@@ -23,4 +24,5 @@ class RoomReservationSerializer(RoomBaseSerializer):
 			'extra_charge_child',
 			'extra_charge_baby',
 			'status',
+			'reservations',
 		)

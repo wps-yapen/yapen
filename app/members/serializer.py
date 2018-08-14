@@ -7,7 +7,8 @@ from django.utils.http import urlsafe_base64_encode
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from reservation.models import Reservation
+from location.serializer.pension import PensionNameSerializer
+from location.serializer.room import RoomBaseSerializer
 from .token import account_activation_token
 from reservation.serializer.reservation import ReservationSerializer
 
@@ -26,17 +27,11 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
     def to_internal_value(self, data):
         ret = super(UserCreateSerializer, self).to_internal_value(data)
-
         return ret
 
     def to_representation(self, obj):
         ret = super(UserCreateSerializer, self).to_representation(obj)
         return ret
-
-
-    def validate_email(self, value):
-        return value
-
 
     def validate_password(self, value):
         if len(value) < 8:
@@ -70,26 +65,34 @@ class UserCreateSerializer(serializers.ModelSerializer):
         return validated_data
 
 
-class UserReservationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Reservation
-        field = [
+class RoomUserDetailSerializer(RoomBaseSerializer):
+    pension = PensionNameSerializer(read_only=True)
+
+    class Meta(RoomBaseSerializer.Meta):
+        fields = RoomBaseSerializer.Meta.fields+(
+            'pension',
+        )
+
+
+class UserReservationSerializer(ReservationSerializer):
+    room = RoomUserDetailSerializer(read_only=True)
+
+    class Meta(ReservationSerializer.Meta):
+        fields =ReservationSerializer.Meta.fields + (
             'room',
-            'user',
-            'checkin_date',
-            'checkout_date',
             'total_price',
             'subscriber',
             'phone_number',
-        ]
+        )
 
 
-class UserDetailSerializer(ReservationSerializer):
+class UserDetailSerializer(serializers.ModelSerializer):
     reservations = UserReservationSerializer(many=True, read_only=True)
     class Meta(ReservationSerializer.Meta):
         model = User
-        fields = ['usernam',] + \
-                 ReservationSerializer.Meta.fields
+        fields = ('username',
+                  'reservations')
+
 
 
 class UserPasswordChange(serializers.ModelSerializer):

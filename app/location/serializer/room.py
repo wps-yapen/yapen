@@ -1,4 +1,6 @@
 from rest_framework import serializers
+
+
 from ..models import  Room, RoomImage
 
 __all__ = (
@@ -8,29 +10,18 @@ __all__ = (
     'RoomImageSerializer',
 )
 
-# class ReservationSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Reservation
-#         fields=(
-#             'date'
-#         )
-
-
 class RoomImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = RoomImage
         fields = (
-            # 'room',
             'room_image',
         )
 
-
 class RoomBaseSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Room
         fields = (
-        # 'pension',
+        'pk',
         'name' ,
         'size',
         'normal_num_poeple',
@@ -48,17 +39,3 @@ class RoomSerializer(RoomBaseSerializer):
         'info',
         'roomimages',
         )
-
-#
-# class RoomReservationSerializer(RoomBaseSerializer):
-# #     reservations=
-# #
-# #     class Meta(RoomBaseSerializer.Meta):
-# #         fields = RoomBaseSerializer.Meta.fields + (
-# #         'extra_charge_head' ,
-# #         'extra_charge_adult' ,
-# #         'extra_charge_child' ,
-# #         'extra_charge_baby',
-# #         'reservations',
-# #         )
-#     pass
