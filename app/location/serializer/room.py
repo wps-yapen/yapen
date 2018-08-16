@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-
+# from location.serializer.pension import PensionButtonSerachResultSerializer
 from ..models import  Room, RoomImage
 
 __all__ = (
@@ -29,6 +29,7 @@ class RoomBaseSerializer(serializers.ModelSerializer):
         'price' ,
         )
 
+# Pension detail 페이지에서 각 room 상세정보 보여줄 serializer
 class RoomSerializer(RoomBaseSerializer):
     roomimages = RoomImageSerializer(many=True, read_only=True)
 
@@ -39,3 +40,4 @@ class RoomSerializer(RoomBaseSerializer):
         'info',
         'roomimages',
         )
+
