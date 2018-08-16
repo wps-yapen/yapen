@@ -25,8 +25,8 @@ urlpatterns = [
     path('', index),
     path('members/', include('members.urls')),
     path('location/', include('location.urls')),
-    path('reservation/', include('reservation.urls'))
-
+    path('reservation/', include('reservation.urls')),
+    path('search/', include('search.urls'))
 
 
 ]
