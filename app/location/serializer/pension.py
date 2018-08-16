@@ -68,3 +68,4 @@ class PensionNameSerializer(serializers.ModelSerializer):
             'pk',
             'name',
         )
+

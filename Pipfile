@@ -18,6 +18,7 @@ utils = "*"
 django-rest-auth = "*"
 update = "*"
 requests = "*"
+django-filter = "*"
 
 [dev-packages]
 awsebcli = "*"
