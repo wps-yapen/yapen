@@ -12,14 +12,12 @@ __all__ = (
 
 
 class User(AbstractUser):
-    username = models.CharField(max_length=255,unique=True)
+    username = models.EmailField(unique=True)
     password = models.CharField(max_length=255)
     password2 = models.CharField(max_length=255)
-    email = models.EmailField()
     phone_number = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_by = models.DateTimeField(auto_now=True)
-
 
     class Meta:
         db_table = "users"
