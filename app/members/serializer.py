@@ -17,9 +17,7 @@ User = get_user_model()
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(max_length=100)
-    email = serializers.EmailField()
-
+    username = serializers.EmailField()
 
     class Meta:
         model = User
@@ -38,11 +36,11 @@ class UserCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('패스워드는 최소 8자 이상이어야 합니다.')
         return value
 
+
     def create(self, validated_data):
         user = User.objects.create(
             username = validated_data['username'],
             password = validated_data['password'],
-            email = validated_data['email'],
             phone_number = validated_data['phone_number'],
         )
         user.set_password(validated_data['password'])
@@ -58,7 +56,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
         })
 
         mail_subject = '회원가입 메일입니다.'
-        to_email= user.email
+        to_email= user.username
         email = EmailMessage(mail_subject, message, to = [to_email,])
         email.send()
 
