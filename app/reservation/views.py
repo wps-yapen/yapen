@@ -9,12 +9,12 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from location.models import Room
+from location.models import Room, Pension
 from location.serializer import pension
 from location.serializer.room import RoomBaseSerializer
 from reservation.models import Reservation
 from reservation.serializer.payment import ReservationPaySerializer
-from reservation.serializer.reservation import RoomReservationSerializer
+from reservation.serializer.reservation import RoomReservationSerializer, PensionReservationSerializer
 import json
 
 
@@ -30,10 +30,10 @@ def convert_to_datetime(date):
 
 class ReservationRoom(APIView):
 
-    def get(self, request, pk, date, format=None):
-        list1 = date.split('-')
-        year = int(list1[0])
-        month = int(list)
+    # def get(self, request, pk, date, format=None):
+    #     list1 = date.split('-')
+    #     year = int(list1[0])
+    #     month = int(list)
 
     def get(self,request,pk, date, format=None):
         target_date = convert_to_datetime(date)
@@ -53,8 +53,8 @@ class ReservationRoom(APIView):
             room.status = True
             room.save()
 
-        rooms_all = Room.objects.filter(pension=pk)
-        serializer = RoomReservationSerializer(rooms_all, many=True)
+        pension =Pension.objects.get(pk=pk)
+        serializer = PensionReservationSerializer(pension)
         return Response(serializer.data,status=status.HTTP_200_OK)
 
 
