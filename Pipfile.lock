@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "846b36025f26840e3c80b889afb234f3d821f2d3b90044aa8c77df0716472490"
+            "sha256": "bc0cf45bcd9853b56bc04174ce0618b091420bfb114140d7efd76c1b3b7bb8a7"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -27,18 +27,18 @@
         },
         "boto3": {
             "hashes": [
-                "sha256:7fdc2f6f21372572fec9df52e70b5ae11c263fe5905fc61dbd7ac3b01350cb4a",
-                "sha256:e3ac48844b5ee6adafd27f6682efdd009a9c5f70abef0b72092d039ae3050279"
+                "sha256:b5ae96cc8d24530298e01a9a77a4982e4f466e1313f21703b2e282eff2ba6292",
+                "sha256:ded0cc0a9a58a9c58d2e95d76fa17a559a1c1ebae3a9c70186c6e8b985357f74"
             ],
             "index": "pypi",
-            "version": "==1.7.77"
+            "version": "==1.7.78"
         },
         "botocore": {
             "hashes": [
-                "sha256:bcd30fdd029f4d402b39fd52d89e90cdc26b7fb1a56e4b5778e6eff00608fd11",
-                "sha256:d9a0d504034f75341dde22a8917531071205dff92cc3f5f0962a3605951792b0"
+                "sha256:7af71a263f6512d96548283a225e0cdedcbe985cc36dec9bb18d7accfe1e8a88",
+                "sha256:fd4dca165c7ef1e6d0721af433b50b1459a78ee917fee68d207dca703aabf71f"
             ],
-            "version": "==1.10.77"
+            "version": "==1.10.78"
         },
         "certifi": {
             "hashes": [
@@ -61,6 +61,14 @@
             ],
             "index": "pypi",
             "version": "==2.1"
+        },
+        "django-filter": {
+            "hashes": [
+                "sha256:6f4e4bc1a11151178520567b50320e5c32f8edb552139d93ea3e30613b886f56",
+                "sha256:86c3925020c27d072cdae7b828aaa5d165c2032a629abbe3c3a1be1edae61c58"
+            ],
+            "index": "pypi",
+            "version": "==2.0.0"
         },
         "django-rest-auth": {
             "hashes": [
@@ -318,6 +326,14 @@
         }
     },
     "develop": {
+        "appnope": {
+            "hashes": [
+                "sha256:5b26757dc6f79a3b7dc9fab95359328d5747fcb2409d331ea66d0272b90ab2a0",
+                "sha256:8b995ffe925347a2138d7ac0fe77155e4311a0ea6d6da4f5128fe4b3cbe5ed71"
+            ],
+            "markers": "sys_platform == 'darwin'",
+            "version": "==0.1.0"
+        },
         "awsebcli": {
             "hashes": [
                 "sha256:ea9659c1a98e44f75b143ef9eaf0e46420a82916ba02b0f81158da59d80e4e32"
@@ -341,10 +357,10 @@
         },
         "botocore": {
             "hashes": [
-                "sha256:bcd30fdd029f4d402b39fd52d89e90cdc26b7fb1a56e4b5778e6eff00608fd11",
-                "sha256:d9a0d504034f75341dde22a8917531071205dff92cc3f5f0962a3605951792b0"
+                "sha256:7af71a263f6512d96548283a225e0cdedcbe985cc36dec9bb18d7accfe1e8a88",
+                "sha256:fd4dca165c7ef1e6d0721af433b50b1459a78ee917fee68d207dca703aabf71f"
             ],
-            "version": "==1.10.77"
+            "version": "==1.10.78"
         },
         "cached-property": {
             "hashes": [

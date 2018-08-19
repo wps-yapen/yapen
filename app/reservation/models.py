@@ -34,3 +34,6 @@ class Reservation(models.Model):
   birth_date_of_owner = models.CharField( max_length=100,blank=True) # 생년월일19920803
   installment_plan = models.CharField( max_length=100,blank=True) # 할부선택
   email = models.EmailField(blank=True)
+
+  def __str__(self):
+    return f'{self.user}: {self.room} 총 가격:{self.total_price}'
