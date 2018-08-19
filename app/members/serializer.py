@@ -18,6 +18,8 @@ User = get_user_model()
 
 class UserCreateSerializer(serializers.ModelSerializer):
     username = serializers.EmailField()
+    password = serializers.CharField()
+    password2 = serializers.CharField()
 
     class Meta:
         model = User
@@ -31,10 +33,17 @@ class UserCreateSerializer(serializers.ModelSerializer):
         ret = super(UserCreateSerializer, self).to_representation(obj)
         return ret
 
+
     def validate_password(self, value):
         if len(value) < 8:
             raise serializers.ValidationError('패스워드는 최소 8자 이상이어야 합니다.')
         return value
+
+
+    def validate(self, attrs):
+        if attrs['password'] != attrs['password2']:
+            raise serializers.ValidationError('패스워드가 일치하지 않습니다.')
+        return attrs
 
 
     def create(self, validated_data):
@@ -110,7 +119,7 @@ class UserPasswordChange(serializers.ModelSerializer):
 
         password2 = self.initial_data.get('password2')
         if not password == password2:
-            raise serializers.ValidationError('비밀번호가 일치하지 않습니다.')
+            raise ValidationError('비밀번호가 일치하지 않습니다.')
 
         errors = dict()
 

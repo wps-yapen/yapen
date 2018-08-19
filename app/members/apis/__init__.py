@@ -24,7 +24,7 @@ class SignUp(APIView):
             serializer.save()
 
             return Response(serializer.validated_data, status=status.HTTP_200_OK)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserActivate(APIView):
@@ -89,7 +89,8 @@ class SignUp(APIView):
             serializer.save()
 
             return Response(serializer.validated_data, status=status.HTTP_200_OK)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        # return Response('유효성 검사에 실패하였습니다', status=status.HTTP_400_BAD_REQUEST)
+        raise serializer.ValidationError
 
 
 class UserActivate(APIView):
@@ -153,7 +154,7 @@ class UserChangePassword(APIView):
 
         if serializer.is_valid():
             serializer.save()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response('비밀번호가 변경되었습니다.',status=status.HTTP_204_NO_CONTENT)
 
         else:
             return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
