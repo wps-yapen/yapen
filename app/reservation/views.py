@@ -60,17 +60,23 @@ class ReservationRoom(APIView):
 
 class ReservationInfo(APIView):
 
-    # room 객체 얻는 함수 없으면 404에러
-    def get_room_object(self, pk):
-        try:
-            return Room.objects.get(pk=pk)
-        except Room.DoesNotExist:
-            raise Http404
+    # # room 객체 얻는 함수 없으면 404에러
+    # def get_room_object(self, pk):
+    #     try:
+    #         return Room.objects.get(pk=pk)
+    #     except Room.DoesNotExist:
+    #         raise Http404
 
     def post(self, request, format=None):
         # 먼저 전달받은 pk로 해당 방 객체를 얻는다. 없으면 404 애러 띄움.
         rooom_pk = request.data.get('pk')
-        room = self.get_room_object(pk=rooom_pk)
+
+        try:
+            room = Room.objects.get(pk=rooom_pk)
+        except Room.DoesNotExist:
+            raise Http404
+
+        # room = self.get_room_object(pk=rooom_pk)
 
 
         # 묵으려는 박수가 다른 reservatino 과 겹치면?
@@ -100,12 +106,12 @@ class ReservationInfo(APIView):
 
 class ReservationPay(APIView):
 
-    # room 객체 얻는 함수 없으면 404에러
-    def get_room_object(self, pk):
-        try:
-            return Room.objects.get(pk=pk)
-        except Room.DoesNotExist:
-            raise Http404
+    # # room 객체 얻는 함수 없으면 404에러
+    # def get_room_object(self, pk):
+    #     try:
+    #         return Room.objects.get(pk=pk)
+    #     except Room.DoesNotExist:
+    #         raise Http404
 
 
     def post(self,request, format=None):
@@ -114,9 +120,14 @@ class ReservationPay(APIView):
         if type(request.user) == django.contrib.auth.models.AnonymousUser:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
+        try:
+            room = Room.objects.get(pk=request.data.get('pk'))
+        except Room.DoesNotExist:
+            raise Http404
 
         reservation = Reservation.objects.create(
-            room=self.get_room_object(pk=request.data.get('pk')),
+            # room=self.get_room_object(pk=request.data.get('pk')),
+            room=room,
             user=request.user,
             checkin_date=convert_to_datetime(request.data.get('checkin_date')),
             checkout_date=convert_to_datetime(request.data.get('checkin_date')) +
