@@ -9,7 +9,6 @@ from location.models import Pension, Room
 from location.serializer.pension import PensionListSerializer
 import django_filters
 
-from location.serializer.room import RoomBaseSerializer
 from reservation.models import Reservation
 from search.serializer import RoomButtonSearchResultSerializer, PensionButtonSerachResultSerializer
 
@@ -34,52 +33,22 @@ class KeyWordSearch(generics.ListCreateAPIView):
     search_fields = ('name','theme',)
 
 
-#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@       임시 저장함.
-
-class ButtonFilter(django_filters.rest_framework.FilterSet):
-    sub_location_no = django_filters.CharFilter("pension__sub_location__sub_location_no")
-    max_num_people = django_filters.NumberFilter("max_num_people", lookup_expr='lte')
-    theme = django_filters.CharFilter("pension__theme",lookup_expr='contains')
-    from_price = django_filters.NumberFilter("price", lookup_expr='gte')
-    to_price = django_filters.NumberFilter("price", lookup_expr='lte')
-
-    # pension__theme__contains
-
-    class Meta:
-        model = Room
-        fields = [
-            'sub_location_no',
-            'max_num_people',
-            'theme','from_price',
-            'to_price',
-        ]
-
-
-class ButtonSearch(generics.ListAPIView):
-    queryset = Room.objects.all()
-    serializer_class = RoomButtonSearchResultSerializer
-    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
-    filter_class = ButtonFilter
-
-#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    임시저장함.
-
-
-
-
-
 class ButtonPensionSearch(APIView):
 
     def get(self,request,format=None):
         get_data = request.query_params
 
+        # serializer에서 room field 를 filtering할때 쓸것 담을곳.
+        context = dict()
+
         # url prarm에 넣은 것들만 Q로된 list에 추가해서 fitler할때 활용하겠다. (이렇게 안하면 애러뜸.)
         q_filter_objects = Q()
-        q_exclude_objects = Q()
 
         if get_data.get('sub_location_no')!=None:
             q_filter_objects.add(Q(sub_location__sub_location_no=get_data.get('sub_location_no')),Q.AND)
         if get_data.get('max_num_people')!=None:
             q_filter_objects.add(Q(rooms__max_num_people__gte=get_data.get('max_num_people')),Q.AND)
+            context['max_num_people'] = get_data.get('max_num_people')
 
         # theme의 경우는 url에서 , 으로 구분해서 받아서 여기서 for문 돌면서 Q로된 list에 추가해준다.
         if get_data.get('theme')!=None:
@@ -92,6 +61,8 @@ class ButtonPensionSearch(APIView):
         if get_data.get('from_price')!=None and get_data.get('to_price')!=None:
             q_filter_objects.add(Q(rooms__price__gte=get_data.get('from_price')),Q.AND)
             q_filter_objects.add(Q(rooms__price__lte=get_data.get('to_price')),Q.AND)
+            context['from_price'] = get_data.get('from_price')
+            context['to_price'] = get_data.get('to_price')
 
         # 예약 겹치는 방 가진 pension 제외하는 Q
         if get_data.get('checkin_date')!=None and get_data.get('stay_day_num')!=None:
@@ -111,13 +82,17 @@ class ButtonPensionSearch(APIView):
             # 그런 방들의 pk를 하나라도 가지고 있는 pension 을 뽑음.
             q_filter_objects.add(Q(rooms__in=rooms), Q.AND)
 
+            context['checkin_date'] = get_data.get('checkin_date')
+            context['stay_day_num'] = get_data.get('stay_day_num')
+
         pensions = Pension.objects.filter(q_filter_objects).distinct()
+        serializer = PensionButtonSerachResultSerializer(data=pensions, many=True,context=context)
 
-        serializer = PensionButtonSerachResultSerializer(pensions, many=True)
-
+        # 위에서 serializer 함수 호출시 data 표시해주면 is_valid에서 false이지만 어쨌든 Response에 넣어줄 수 있어서 이렇ㅔ했음.
+        # pension을 그대로 위치인자로 주면 is_valid 자체를 검사조차 못한다.
+        serializer.is_valid()
+        serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-
 
 
 
