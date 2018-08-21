@@ -1,7 +1,7 @@
 from django.conf.urls import url
 from django.urls import path
 
-from .views import PensionLocationNamesList, PensionDetail, PensionSubLocationList, PensionMainList
+from .apis import PensionLocationNamesList, PensionDetail, PensionSubLocationList, PensionMainList
 
 urlpatterns = [
     path('',
