@@ -24,7 +24,7 @@ class SignUp(APIView):
 
             return Response(serializer.validated_data, status=status.HTTP_200_OK)
         # return Response('유효성 검사에 실패하였습니다', status=status.HTTP_400_BAD_REQUEST)
-        raise serializer.ValidationError
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserActivate(APIView):
@@ -67,16 +67,6 @@ class AuthToken(APIView):
             return AuthenticationFailed()
 
 
-class UserDetailView(APIView):
-    permission_classes = (
-        permissions.IsAuthenticated,
-    )
-
-    def get(self, request):
-        serializer = UserDetailSerializer(request.user)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
 class UserChangePassword(APIView):
     permission_classes = (
         permissions.IsAuthenticated,
@@ -91,7 +81,7 @@ class UserChangePassword(APIView):
             return Response('비밀번호가 변경되었습니다.', status=status.HTTP_204_NO_CONTENT)
 
         else:
-            return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserDetailView(APIView):
