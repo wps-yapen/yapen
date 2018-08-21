@@ -64,7 +64,7 @@ class AuthToken(APIView):
             }
             return Response(data, status=status.HTTP_200_OK)
         else:
-            return AuthenticationFailed()
+            return Response('ID 또는 비밀번호를 확인해 주세요.', status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserChangePassword(APIView):
