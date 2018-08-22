@@ -5,9 +5,9 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializer.location import LocationSerializer, SubLocationSerializer
-from .serializer.pension import PensionDetailSerializer, PensionListSerializer
-from .models import Pension, Location, SubLocation, Room
+from ..serializer.location import LocationSerializer, SubLocationSerializer
+from ..serializer.pension import PensionDetailSerializer, PensionListSerializer
+from ..models import Pension, Location, SubLocation, Room
 
 
 # 검색창에서 쓰이는 Locaiton, SubLocation 의 name, location_no, pension수 보이기 위한 serailzie

@@ -22,6 +22,9 @@ def convert_to_datetime(date):
     target_date = datetime.date(year, month, day)
     return target_date
 
+# 가격을 숫자로 받은뒤 해당하는 range를 가져다 쓴다.
+price_range_dict ={'1':(0,50000),'2':(50000,100000),'3':(100000,150000),'4':(150000,200000),'5':(200000,250000),
+                   '6':(250000,300000),'7':(300000,350000),'8':(350000,400000),'9':(400000,9999999)}
 
 
 class KeyWordSearch(generics.ListCreateAPIView):
@@ -58,11 +61,21 @@ class ButtonPensionSearch(APIView):
                 q_filter_objects.add(Q(theme__contains=theme), Q.AND)
 
         # 가격
-        if get_data.get('from_price')!=None and get_data.get('to_price')!=None:
-            q_filter_objects.add(Q(rooms__price__gte=get_data.get('from_price')),Q.AND)
-            q_filter_objects.add(Q(rooms__price__lte=get_data.get('to_price')),Q.AND)
-            context['from_price'] = get_data.get('from_price')
-            context['to_price'] = get_data.get('to_price')
+        if get_data.get('price_range')!=None:
+            price_range = price_range_dict[get_data.get('price_range')]
+            from_price = price_range[0]
+            to_price = price_range[1]
+
+            q_filter_objects.add(Q(rooms__price__gte=from_price),Q.AND)
+            q_filter_objects.add(Q(rooms__price__lte=to_price),Q.AND)
+            context['from_price'] = from_price
+            context['to_price'] = to_price
+
+        # if get_data.get('from_price') != None and get_data.get('to_price') != None:
+            # q_filter_objects.add(Q(rooms__price__gte=get_data.get('from_price')),Q.AND)
+            # q_filter_objects.add(Q(rooms__price__lte=get_data.get('to_price')),Q.AND)
+            # context['from_price'] = get_data.get('from_price')
+            # context['to_price'] = get_data.get('to_price')
 
         # 예약 겹치는 방 가진 pension 제외하는 Q
         if get_data.get('checkin_date')!=None and get_data.get('stay_day_num')!=None:
