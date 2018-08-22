@@ -19,12 +19,6 @@ RUN             cp -f   /srv/project/.config/${BUILD_MODE}/nginx.conf \
                 ln -s  /etc/nginx/sites-available/nginx_app.conf \
                         /etc/nginx/sites-enabled/
 
-# Front-end
-#WORKDIR         /srv/project/front
-#RUN             npm install
-
-
-
 
 # supervisor설정 복사
 RUN             cp -f   /srv/project/.config/${BUILD_MODE}/supervisor.conf \

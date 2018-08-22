@@ -1,5 +1,6 @@
 # Project Secret
 /.secrets
+secrets.tar
 /.static
 /.media
 

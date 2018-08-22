@@ -51,7 +51,20 @@ MEDIA_ROOT = os.path.join(ROOT_DIR, '.media')
 # Databaseses
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databa
 
-DATABASES = secrets['DATABASES']
+
+if 'TRAVIS' in os.environ:
+    DATABASES ={
+        'default':{
+            'ENGINE' : 'django.db.backends.postgresql',
+            'NAME' : 'travis_ci_test',
+            'USER' : 'postgres',
+            'PASSWORD' : '',
+            'PORT' : 5432,
+            'HOST' : 'localhost',
+        }
+    }
+else:
+    DATABASES = secrets['DATABASES']
 
 
 

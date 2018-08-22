@@ -1,0 +1,39 @@
+language: python
+python:
+- 3.6
+services:
+- postgresql
+addons:
+  postgresql: '9.4'
+before_install:
+- openssl aes-256-cbc -K $encrypted_f3374ddafb88_key -iv $encrypted_f3374ddafb88_iv
+  -in secrets.tar.enc -out secrets.tar -d
+- tar xvf secrets.tar
+install:
+- pip install -r requirements.txt
+branches:
+  only:
+  - master
+before_script:
+- psql -c 'create database travis_ci_test;' -u postgres
+script:
+- cd app
+- "./manage.py test"
+- cd ..
+- git add -A
+before_deploy:
+- zip -r archive.zip .
+deploy:
+  provider: elasticbeanstalk
+  zip_file: archive.zip
+  access_key_id: "$AWS_ACCESS_KEY"
+  secret_access_key:
+    secure: "$AWS_SECRET_KEY"
+  region: ap-northeast-2
+  app: eb yapen deploy
+  env: ebyapendeploy-dev
+  bucket_name: yapen-production
+  skip_cleanup: true
+  on:
+    branch: master
+
