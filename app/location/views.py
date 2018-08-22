@@ -1,4 +1,3 @@
-
 from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import render
@@ -29,8 +28,3 @@ class IosPensionSubLocationList(APIView):
         serializer = IosSubLocationSerializer(sub_location, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-
-
-

@@ -1,7 +1,8 @@
 from django.conf.urls import url
 from django.urls import path
 
-from .views  IosPensionMainList,IosPensionSubLocationList
+
+from .views import IosPensionMainList, IosPensionSubLocationList
 from .apis import PensionLocationNamesList, PensionDetail, PensionSubLocationList, PensionMainList
 
 
