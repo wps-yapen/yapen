@@ -19,6 +19,7 @@ django-rest-auth = "*"
 update = "*"
 requests = "*"
 django-filter = "*"
+django-cors-headers = "*"
 
 [dev-packages]
 awsebcli = "*"

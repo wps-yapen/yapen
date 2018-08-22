@@ -3,9 +3,18 @@ MAINTAINER  gambler1541@gmail.com
 
 # pip install uwsgi
 RUN         apt -y update && apt -y dist-upgrade
-RUN         apt -y install python-setuptools build-essential
-RUN         apt -y install nginx supervisor
 
+# Node.js 설치 패키지
+RUN         apt-get -y install curl gnupg
+#RUN         curl -sL https://deb.nodesource.com/setup_8.x | bash -
+
+RUN         apt -y install python-setuptools build-essential
+# Nginx, supervisor, Node.js 설치
+RUN         apt -y install nginx supervisor nodejs
+#RUN         npm install -g @angular/cli
 # 로컬의 requirements.txt 파일을 /srv에 복사 후 pip install 실행
-COPY        ./requirements.txt  /srv/
+COPY         ./requirements.txt               /srv/requirements.txt
+#COPY        ./front/package.json        /srv/package.json
+#COPY        ./front/package-lock.json   /srv/package-lock.json
+
 RUN         pip install -r /srv/requirements.txt
