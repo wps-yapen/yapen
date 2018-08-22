@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .apis import SignUp, UserActivate, UserDetailView, AuthToken, UserChangePassword, Deletetoken
+from .apis import SignUp, UserActivate, UserDetailView, AuthToken, UserChangePassword, Deletetoken, FacebookLogin
 
 app_name = 'members'
 
@@ -11,5 +11,6 @@ urlpatterns = [
     path('detail/', UserDetailView.as_view(), name='detail'),
     path('changepassword/', UserChangePassword.as_view(), name='changepassword'),
     path('logout/', Deletetoken.as_view(), name='logout'),
+    path('facebook-login/', FacebookLogin.as_view(), name='facebook-login'),
 
 ]
