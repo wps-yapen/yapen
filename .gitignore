@@ -3,8 +3,12 @@
 /.static
 /.media
 
+
 # Front-end project folder
 /front
+
+# For project's convenience
+
 
 
 ### Django ###
