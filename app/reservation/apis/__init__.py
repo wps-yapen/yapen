@@ -4,7 +4,7 @@ import re
 import django
 from django.db.models import Q
 from django.http import Http404, HttpResponse
-from rest_framework import status
+from rest_framework import status, generics, filters
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -12,10 +12,13 @@ from rest_framework.views import APIView
 from location.models import Room, Pension
 from location.serializer import pension
 from location.serializer.room import RoomBaseSerializer
+from members.serializer import UserReservationSerializer
 from reservation.models import Reservation
 from reservation.serializer.payment import ReservationPaySerializer
 from reservation.serializer.reservation import RoomReservationSerializer, PensionReservationSerializer
 import json
+import django_filters
+from django_filters.rest_framework import DjangoFilterBackend
 
 
 
@@ -145,3 +148,28 @@ class ReservationPay(APIView):
         return Response(request.data,status=status.HTTP_200_OK)
 
 
+class ReservationSearchByIdFilter(django_filters.rest_framework.FilterSet):
+
+    class Meta:
+        model = Reservation
+        fields = ['id','subscriber']
+
+
+class ReservationSearchById(generics.ListAPIView):
+    queryset = Reservation.objects.all()
+    serializer_class = UserReservationSerializer
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    filter_class = ReservationSearchByIdFilter
+
+
+class ReservationSearchByInfoFilter(django_filters.rest_framework.FilterSet):
+    class Meta:
+        model = Reservation
+        fields = ['subscriber','phone_number']
+
+
+class ReservationSearchByInfo(generics.ListAPIView):
+    queryset = Reservation.objects.all()
+    serializer_class = UserReservationSerializer
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    filter_class = ReservationSearchByIdFilter
