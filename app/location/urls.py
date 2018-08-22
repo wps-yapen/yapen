@@ -3,7 +3,6 @@ from django.urls import path
 
 
 from .views import IosPensionMainList, IosPensionSubLocationList
-
 from .apis import PensionLocationNamesList, PensionDetail, PensionSubLocationList, PensionMainList
 
 
