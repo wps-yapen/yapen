@@ -10,6 +10,10 @@ class Reservation(models.Model):
   checkout_date = models.DateField(auto_now=False, auto_now_add=False, blank=True)
   total_price = models.IntegerField(default=0, blank=True)
 
+
+  #예약번호 번호
+  reservation_num = models.CharField( max_length=100,blank=True)
+
   # 예약페이지 상세정보
   subscriber = models.CharField( max_length=100,blank=True) # 예약자 이름
   phone_number = models.CharField( max_length=100,blank=True) # 휴대폰 번호
