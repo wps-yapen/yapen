@@ -73,6 +73,8 @@ MIDDLEWARE = [
 # Front
 CORS_ORIGIN_WHITELIST = (
     'api.pmb.kr',
+    'www.pmb.kr',
+    'pmb.kr',
     'localhost:4200',
 
 )

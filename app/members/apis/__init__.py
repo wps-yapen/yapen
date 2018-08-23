@@ -138,3 +138,15 @@ class FacebookLogin(APIView):
             'user': FacebookUserSerializer(user).data
         }
         return Response(data)
+
+
+class WithDraw(APIView):
+    permission_classes = (
+        permissions.IsAuthenticated,
+    )
+    def get(self, request):
+        if request.user.is_authenticated:
+            request.user.delete()
+            return Response(status.HTTP_200_OK)
+        else:
+            return Response('인증되지않은 회원입니다.')

@@ -5,10 +5,15 @@ MAINTAINER      gambler1541@gmail.com
 # production
 ENV             BUILD_MODE              production
 ENV             DJANGO_SETTINGS_MODULE  config.settings.${BUILD_MODE}
+ENV             PROJECT_DIR             /srv/project
 
 
 RUN             mkdir /var/log/django
-COPY            .   /srv/project
+
+
+COPY            .   ${PROJECT_DIR}
+WORKDIR         ${PROJECT_DIR}
+
 
 # Nginx 설정파일들 복사 및 enabled로 링크
 RUN             cp -f   /srv/project/.config/${BUILD_MODE}/nginx.conf \
@@ -19,12 +24,13 @@ RUN             cp -f   /srv/project/.config/${BUILD_MODE}/nginx.conf \
                 ln -s  /etc/nginx/sites-available/nginx_app.conf \
                         /etc/nginx/sites-enabled/
 
+RUN             mv /srv/project/front/*     /srv/front/
 
 # supervisor설정 복사
 RUN             cp -f   /srv/project/.config/${BUILD_MODE}/supervisor.conf \
                         /etc/supervisor/conf.d/
 
 EXPOSE          7000
-
+WORKDIR         /srv/front
 # supervisord실행
-CMD             supervisord -n
+CMD             pkill nginx; supervisord -n
