@@ -120,8 +120,8 @@ class ReservationPay(APIView):
     def post(self,request, format=None):
 
         # 로그인이 안되있으면 (받은 요청의 헤더에 토큰이 없으면) 에러 발생
-        if type(request.user) == django.contrib.auth.models.AnonymousUser:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        # if type(request.user) == django.contrib.auth.models.AnonymousUser:
+        #     return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
         reservation = Reservation.objects.create(

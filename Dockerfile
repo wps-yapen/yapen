@@ -24,13 +24,13 @@ RUN             cp -f   /srv/project/.config/${BUILD_MODE}/nginx.conf \
                 ln -s  /etc/nginx/sites-available/nginx_app.conf \
                         /etc/nginx/sites-enabled/
 
-RUN             mv /srv/project/front/*     /srv/front/
+
 
 # supervisor설정 복사
 RUN             cp -f   /srv/project/.config/${BUILD_MODE}/supervisor.conf \
                         /etc/supervisor/conf.d/
 
 EXPOSE          7000
-WORKDIR         /srv/front
+
 # supervisord실행
-CMD             pkill nginx; supervisord -n
+CMD             supervisord -n
