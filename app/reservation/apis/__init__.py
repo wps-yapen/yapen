@@ -19,7 +19,12 @@ from reservation.serializer.reservation import RoomReservationSerializer, Pensio
 import json
 import django_filters
 from django_filters.rest_framework import DjangoFilterBackend
+from random import randint
 
+# 예약번호 생성할때 쓸 랜덤알파벳 생성
+def get_rand_char():
+    result = chr(randint(65,90))+ chr(randint(65,90))+chr(randint(65,90))
+    return  result
 
 
 def convert_to_datetime(date):
@@ -117,7 +122,6 @@ class ReservationPay(APIView):
         if type(request.user) == django.contrib.auth.models.AnonymousUser:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-
         reservation = Reservation.objects.create(
             room=self.get_room_object(pk=request.data.get('pk')),
             user=request.user,
@@ -129,6 +133,10 @@ class ReservationPay(APIView):
             phone_number=request.data.get("phone_number"),
             method_of_payment=request.data.get("method_of_payment"),
         )
+
+        reservation.reservation_num = get_rand_char() + str(datetime.datetime.now().year) + str(datetime.datetime.now().month) + str(reservation.pk)
+
+
         # 지불 방법에 따라 다르게 업데이트해야한다.
         if request.data.get("method_of_payment") == "무통장입금":
             reservation.deposit_bank = request.data.get("deposit_bank")
@@ -145,6 +153,8 @@ class ReservationPay(APIView):
             reservation.email = request.data.get("email")
         reservation.save()
 
+        request.data.update({'reservation_num':reservation.reservation_num })
+
         return Response(request.data,status=status.HTTP_200_OK)
 
 
@@ -152,10 +162,10 @@ class ReservationSearchByIdFilter(django_filters.rest_framework.FilterSet):
 
     class Meta:
         model = Reservation
-        fields = ['id','subscriber']
+        fields = ['reservation_num','subscriber']
 
 
-class ReservationSearchById(generics.ListAPIView):
+class ReservationSearchByReservation_num(generics.ListAPIView):
     queryset = Reservation.objects.all()
     serializer_class = UserReservationSerializer
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
