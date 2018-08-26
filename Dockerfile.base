@@ -5,17 +5,26 @@ MAINTAINER  gambler1541@gmail.com
 RUN         apt -y update && apt -y dist-upgrade
 
 # Node.js 설치 패키지
-RUN         apt-get -y install apt-utils curl
+RUN         apt-get -y install apt-utils curl gnupg
+RUN         curl -sL https://deb.nodesource.com/setup_8.x | bash -
 
 
 RUN         apt -y install python-setuptools build-essential
 # Nginx, supervisor, Node.js 설치
-RUN         apt -y install nginx supervisor
+RUN         apt -y install nginx supervisor nodejs
 
 # 로컬의 requirements.txt 파일을 /srv에 복사 후 pip install 실행
 COPY        ./requirements.txt               /srv/requirements.txt
 
 WORKDIR     /srv/project
 RUN         pip install -r /srv/requirements.txt
+
+RUN         mkdir /srv/front
+WORKDIR     /srv/front
+RUN         npm install -g @angular/cli
+
+
+
+
 
 

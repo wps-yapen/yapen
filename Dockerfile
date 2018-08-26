@@ -15,6 +15,11 @@ COPY            .   ${PROJECT_DIR}
 WORKDIR         ${PROJECT_DIR}
 
 
+#pacakge.json 이동
+RUN             mv ${PROJECT_DIR}/front/package.json         /srv/front/package.json
+RUN             mv ${PROJECT_DIR}/front/package-lock.json    /srv/front/package-lock.json
+RUN             mv /srv/project/front/*                      /srv/front
+
 # Nginx 설정파일들 복사 및 enabled로 링크
 RUN             cp -f   /srv/project/.config/${BUILD_MODE}/nginx.conf \
                         /etc/nginx/nginx.conf && \
@@ -32,5 +37,8 @@ RUN             cp -f   /srv/project/.config/${BUILD_MODE}/supervisor.conf \
 
 EXPOSE          7000
 
+
+WORKDIR         /srv/front
+RUN             npm install -g
 # supervisord실행
 CMD             supervisord -n
